@@ -3,8 +3,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "preinstall": "node preinstall.js"
+    "build": "vite build"
   },
   "devDependencies": {
     "axios": "^1.6.4",
