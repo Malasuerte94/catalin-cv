@@ -1,0 +1,40 @@
+{
+  "name": "catalin-ene-backend",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts",
+    "build": "bun build src/index.ts --outdir dist --target bun",
+    "migrate": "bun src/db/migrate.ts",
+    "migrate:generate": "drizzle-kit generate",
+    "db:seed:emails": "bun src/db/seed-emails.ts"
+  },
+  "dependencies": {
+    "@types/node-cron": "^3.0.11",
+    "@types/nodemailer": "^7.0.11",
+    "cors": "^2.8.5",
+    "date-fns": "^4.1.0",
+    "date-fns-tz": "^3.2.0",
+    "drizzle-orm": "^0.30.10",
+    "express": "^4.19.2",
+    "express-rate-limit": "^8.3.1",
+    "ics": "^3.8.1",
+    "ioredis": "^5.10.1",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.1.1",
+    "node-cron": "^4.2.1",
+    "node-ical": "^0.25.5",
+    "nodemailer": "^8.0.2",
+    "pdfkit": "^0.17.1",
+    "postgres": "^3.4.4",
+    "stripe": "^20.4.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "@types/ioredis": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.6",
+    "drizzle-kit": "^0.21.4",
+    "typescript": "^5.4.5"
+  }
+}

@@ -1,19 +1,72 @@
-/.phpunit.cache
-/node_modules
-/public/build
-/public/hot
-/public/storage
-/storage/*.key
-/vendor
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+.gemini/*
+.kilocode/*
+.kiro/*
+5stardesk_docs.md
+
+# Build outputs
+dist/
+build/
+.output/
+.nuxt/
+
+# Environment files
 .env
-.env.backup
-.env.production
-.phpunit.result.cache
-Homestead.json
-Homestead.yaml
-auth.json
-npm-debug.log
-yarn-error.log
-/.fleet
-/.idea
-/.vscode
+.env.prod
+.env.local
+.env.*.local
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+bun-debug.log*
+pnpm-debug.log*
+
+# Runtime / OS
+.DS_Store
+Thumbs.db
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+.idea/
+*.iml
+
+# TypeScript
+*.tsbuildinfo
+
+# Docker
+.docker/data/
+
+# Uploads (user-generated content)
+backend/uploads/*
+backend/invoices/*
+backend/database_backups/*
+!backend/uploads/.gitkeep
+
+# Database
+*.sqlite
+*.db
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+.parcel-cache/
+.vite/
+*.tgz

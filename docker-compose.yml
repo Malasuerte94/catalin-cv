@@ -1,0 +1,136 @@
+# Base Docker Compose - Common services and configuration
+services:
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: catalin-ene-redis
+    command: redis-server --requirepass ${REDIS_PASSWORD:-redis_pass}
+    volumes:
+      - redis_data:/data
+    networks:
+      - catalin-ene-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_pass}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: catalin-ene-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - catalin-ene-network
+    restart: unless-stopped
+    command: >
+      postgres
+      -c shared_buffers=256MB
+      -c effective_cache_size=768MB
+      -c work_mem=16MB
+      -c maintenance_work_mem=64MB
+      -c max_connections=100
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER} -d ${DB_NAME}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Express Backend API
+  backend:
+    build:
+      context: .
+      dockerfile: .docker/backend.Dockerfile
+      target: dev
+    container_name: catalin-ene-backend
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL:-redis://:redis_pass@redis:6379}
+      - PORT=${PORT:-3000}
+      - JWT_SECRET=${JWT_SECRET}
+      - SESSION_SECRET=${SESSION_SECRET}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - catalin-ene-network
+    restart: unless-stopped
+
+  # Vue 3 Frontend Application
+  frontend:
+    build:
+      context: .
+      dockerfile: .docker/frontend.Dockerfile
+      args:
+        - VITE_API_BASE_URL=${VITE_API_BASE_URL:-http://localhost/api}
+      target: dev
+    container_name: catalin-ene-frontend
+    environment:
+      - VITE_API_BASE_URL=${VITE_API_BASE_URL:-http://localhost/api}
+    networks:
+      - catalin-ene-network
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # imgproxy - Image processing proxy (WebP/AVIF conversion)
+  imgproxy:
+    image: darthsim/imgproxy:v3.24
+    container_name: catalin-ene-imgproxy
+    environment:
+      - IMGPROXY_LOCAL_FILESYSTEM_ROOT=/uploads
+      - IMGPROXY_USE_ETAG=true
+      - IMGPROXY_ENABLE_WEBP_DETECTION=true
+      - IMGPROXY_ENFORCE_WEBP=true
+      - IMGPROXY_ENABLE_AVIF_DETECTION=true
+      - IMGPROXY_QUALITY=85
+      - IMGPROXY_MAX_SRC_FILE_SIZE=50000000
+      - IMGPROXY_CACHE_CONTROL_PASSTHROUGH=true
+      - IMGPROXY_USE_LAST_MODIFIED=true
+    volumes:
+      - uploads_data:/uploads:ro
+    networks:
+      - catalin-ene-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "imgproxy", "health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  # Portainer
+  portainer:
+    image: portainer/portainer-ce:latest
+    container_name: catalin-ene-portainer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+    networks:
+      - catalin-ene-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  uploads_data:
+    driver: local
+  portainer_data:
+    driver: local
+  backups_data:
+    driver: local
+
+networks:
+  catalin-ene-network:
+    driver: bridge

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>NEBULA_OS // 2026 CV</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&amp;family=Manrope:wght@300;400;500;600;700;800&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "secondary-fixed": "#83ff16",
+                        "surface-variant": "#25252a",
+                        "primary": "#87efff",
+                        "on-tertiary": "#420d00",
+                        "primary-fixed": "#00e7fd",
+                        "primary-fixed-dim": "#00d7ed",
+                        "on-surface-variant": "#acaaae",
+                        "on-secondary-fixed-variant": "#316800",
+                        "on-secondary": "#2b5d00",
+                        "inverse-primary": "#006974",
+                        "background": "#0e0e11",
+                        "inverse-surface": "#fcf8fd",
+                        "secondary": "#83ff16",
+                        "outline": "#767579",
+                        "surface-container-high": "#1f1f23",
+                        "on-background": "#f0edf1",
+                        "surface-container-low": "#131316",
+                        "surface-dim": "#0e0e11",
+                        "on-tertiary-container": "#0e0100",
+                        "on-primary-container": "#004f58",
+                        "on-secondary-fixed": "#204800",
+                        "secondary-fixed-dim": "#78ef00",
+                        "surface-bright": "#2c2c30",
+                        "inverse-on-surface": "#555458",
+                        "on-primary-fixed": "#003a41",
+                        "tertiary": "#ff7346",
+                        "surface": "#0e0e11",
+                        "tertiary-fixed-dim": "#ff7d54",
+                        "surface-container-highest": "#25252a",
+                        "tertiary-dim": "#ff7346",
+                        "surface-tint": "#87efff",
+                        "outline-variant": "#48474b",
+                        "surface-container-lowest": "#000000",
+                        "error-container": "#9f0519",
+                        "on-primary-fixed-variant": "#005963",
+                        "error": "#ff716c",
+                        "on-tertiary-fixed-variant": "#6e1c00",
+                        "tertiary-fixed": "#ff9473",
+                        "secondary-dim": "#78ef00",
+                        "on-secondary-container": "#e9ffd3",
+                        "on-tertiary-fixed": "#340800",
+                        "primary-dim": "#00d7ed",
+                        "primary-container": "#00e7fd",
+                        "error-dim": "#d7383b",
+                        "on-error": "#490006",
+                        "on-error-container": "#ffa8a3",
+                        "secondary-container": "#326b00",
+                        "tertiary-container": "#fc4c00",
+                        "on-surface": "#f0edf1",
+                        "surface-container": "#19191d",
+                        "on-primary": "#005962"
+                    },
+                    fontFamily: {
+                        "headline": ["Space Grotesk"],
+                        "body": ["Manrope"],
+                        "label": ["Space Grotesk"]
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0e0e11;
+            scroll-behavior: smooth;
+        }
+
+        .glass-panel {
+            background: rgba(25, 25, 29, 0.4);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(72, 71, 75, 0.15);
+        }
+
+        .glow-cyan {
+            text-shadow: 0 0 10px rgba(0, 232, 255, 0.4);
+        }
+
+        .glow-green {
+            text-shadow: 0 0 8px rgba(124, 247, 0, 0.3);
+        }
+
+        .bg-nebula {
+            background-image: radial-gradient(circle at 50% 50%, rgba(0, 231, 253, 0.03) 0%, transparent 70%);
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+    <style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+
+<body class="font-body text-on-surface selection:bg-primary selection:text-on-primary overflow-x-hidden">
+    <!-- 3D Background Elements -->
+    <div class="fixed inset-0 z-[-1] pointer-events-none opacity-40 overflow-hidden bg-nebula">
+        <img alt=""
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 scale-150 blur-xl opacity-30 mix-blend-screen"
+            data-alt="Blurred close-up of high-end mechanical keyboard with glowing teal backlighting in a dark, atmospheric futuristic setting"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuARu1D3Xft3TIBvRAyBNBS4H5NQYfTiu4huPBRyGDCzhOiU_42nYRI1XG0ef8H1MlY6KYVeREsJDkJZ55wiH6GdR0c3JgWf0WCdh1VvB66B2rUqaw1LxwBY5N62VrhRRx2XUjRfnkgrc_tjEsYPHjhfxm6XuhHHIX5qAsvVvSlj7qYCY6QyR4H5JvsQ9qcrSL17cBn_3V9HM0IcjepZ-9862DnWUEr-i2VZGNQP6vVVLV8JxJ5npEO6S1YOddDgxg0CkknJowtOZ0Yw" />
+    </div>
+    <!-- TopAppBar Shell - Simplified -->
+    <header class="fixed top-0 w-full z-50 bg-[#0D0D10]/80 backdrop-blur-xl border-b border-white/10">
+        <div class="flex justify-between items-center w-full px-6 py-4 max-w-7xl mx-auto">
+            <div class="flex items-center gap-3">
+                <span class="material-symbols-outlined text-cyan-400 drop-shadow-[0_0_8px_rgba(0,232,255,0.4)]"
+                    style="font-variation-settings: 'FILL' 1;">terminal</span>
+            </div>
+            <nav class="hidden md:flex gap-8">
+                <a class="text-cyan-400 border-b-2 border-cyan-400 pb-1 font-['Space_Grotesk'] uppercase tracking-widest text-sm transition-all duration-300 ease-out active:scale-95"
+                    href="#home">Home</a>
+                <a class="text-slate-400 hover:text-white transition-colors font-['Space_Grotesk'] uppercase tracking-widest text-sm transition-all duration-300 ease-out active:scale-95"
+                    href="#experience">Experience</a>
+                <a class="text-slate-400 hover:text-white transition-colors font-['Space_Grotesk'] uppercase tracking-widest text-sm transition-all duration-300 ease-out active:scale-95"
+                    href="#portfolio">Work</a>
+                <a class="text-slate-400 hover:text-white transition-colors font-['Space_Grotesk'] uppercase tracking-widest text-sm transition-all duration-300 ease-out active:scale-95"
+                    href="#contact">Connect</a>
+            </nav>
+            <div class="w-8"></div>
+            <!-- Spacer to maintain centering for nav if needed, or simply empty for minimalist feel -->
+        </div>
+    </header>
+    <main class="relative z-10 pt-32 px-6 lg:px-24 max-w-7xl mx-auto">
+        <!-- Hero Section -->
+        <section class="mb-32" id="home">
+            <div class="flex flex-col items-start gap-6 max-w-3xl">
+                <span
+                    class="text-secondary font-label text-sm tracking-[0.3em] font-bold uppercase py-1 px-3 bg-secondary/10 rounded-full">SYSTEM
+                    STATUS: OPTIMIZED</span>
+                <h1
+                    class="font-headline text-5xl md:text-7xl font-black leading-[1.1] tracking-tighter text-on-background">
+                    TRANSFORMING RAW <span class="text-primary italic">DATA</span> INTO KINETIC <span
+                        class="text-secondary">EXPERIENCES</span>.
+                </h1>
+                <p class="text-on-surface-variant text-lg md:text-xl font-light leading-relaxed">
+                    Why you should work with me: I bridge the gap between heavy technical systems and high-fidelity
+                    aesthetics. My stack is built for the 2026 digital landscape where depth is paramount.
+                </p>
+                <div class="mt-4 flex gap-4">
+                    <div class="h-12 w-1 bg-primary rounded-full shadow-[0_0_15px_rgba(135,239,255,0.6)]"></div>
+                    <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant pt-2">Scroll to
+                        explore architecture</p>
+                </div>
+            </div>
+        </section>
+        <!-- Experience Section (Timeline) -->
+        <section class="mb-48" id="experience">
+            <div class="flex items-center gap-4 mb-16">
+                <h2 class="font-headline text-3xl font-black uppercase tracking-tighter">Experience_Log</h2>
+                <div class="h-[1px] flex-grow bg-outline-variant/30"></div>
+            </div>
+            <div class="relative space-y-16">
+                <!-- Power Rail -->
+                <div
+                    class="absolute left-6 md:left-[39px] top-0 bottom-0 w-[2px] bg-gradient-to-b from-primary via-secondary to-transparent shadow-[0_0_10px_rgba(0,232,255,0.3)]">
+                </div>
+                <!-- Exp Item 1 -->
+                <div class="relative pl-16 md:pl-28 group">
+                    <div
+                        class="absolute left-1.5 md:left-[17px] top-0 w-11 h-11 rounded-full bg-surface-container-highest border border-white/10 z-20 overflow-hidden group-hover:scale-110 transition-transform flex items-center justify-center p-2 shadow-[0_0_15px_rgba(0,232,255,0.2)]">
+                        <img alt="Company Logo" class="w-full h-full object-contain"
+                            src="https://lh3.googleusercontent.com/aida/ADBb0ugzUWc3xwVIGiFpZXHBcM80s15sxCD67tu9fJV0pHQBI6ncSLd2XFl70xTStnf0MTGZZd3Ws5c825uTh0ia4aT3bJkHfs9cNWrq--orMmWu4sdpLuB1ymf53mqVWAQIi212eY37ThBe-YyTMW5UDT5FsfuHLYcrrugWd9N2jJQ98xiEuzlYXTEz-WqyZu09M9bNCceTB4oXujNAN6Dj-m0g7mR5nfU_tcJJV8cz6wb1dQqpb5GRTDxH9SNQelYxEZpGkVHPaFv2FwI" />
+                    </div>
+                    <div class="glass-panel p-8 rounded-xl shadow-2xl relative">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                            <div>
+                                <h3 class="text-2xl font-headline font-bold text-on-background">Lead Interface Architect
+                                </h3>
+                                <p class="text-secondary font-label text-xs uppercase tracking-widest font-bold mt-1">
+                                    KINETIC_LABS // 2024 - PRESENT</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <span
+                                    class="bg-surface-container-highest px-3 py-1 rounded-md text-[10px] text-secondary font-bold font-label uppercase">WEBGL</span>
+                                <span
+                                    class="bg-surface-container-highest px-3 py-1 rounded-md text-[10px] text-secondary font-bold font-label uppercase">SHADERS</span>
+                            </div>
+                        </div>
+                        <p class="text-on-surface-variant leading-relaxed mb-6">
+                            Spearheading the transition to 3D workspace environments. Designing immersive UI systems for
+                            spatial computing and neural-link dashboards. Reduced interface latency by 45% using
+                            predictive rendering clusters.
+                        </p>
+                        <div class="flex items-center gap-2 text-secondary/70 text-xs font-label uppercase">
+                            <span class="material-symbols-outlined text-sm">settings_ethernet</span>
+                            <span>System Status: Critical Operation Successful</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Exp Item 2 -->
+                <div class="relative pl-16 md:pl-28 group">
+                    <div
+                        class="absolute left-1.5 md:left-[17px] top-0 w-11 h-11 rounded-full bg-surface-container-highest border border-white/10 z-20 overflow-hidden group-hover:scale-110 transition-transform flex items-center justify-center p-2 shadow-[0_0_15px_rgba(124,247,0,0.2)]">
+                        <!-- Placeholder for second company logo, using same logic -->
+                        <img alt="Company Logo" class="w-full h-full object-contain brightness-0 invert opacity-60"
+                            src="https://lh3.googleusercontent.com/aida/ADBb0ugzUWc3xwVIGiFpZXHBcM80s15sxCD67tu9fJV0pHQBI6ncSLd2XFl70xTStnf0MTGZZd3Ws5c825uTh0ia4aT3bJkHfs9cNWrq--orMmWu4sdpLuB1ymf53mqVWAQIi212eY37ThBe-YyTMW5UDT5FsfuHLYcrrugWd9N2jJQ98xiEuzlYXTEz-WqyZu09M9bNCceTB4oXujNAN6Dj-m0g7mR5nfU_tcJJV8cz6wb1dQqpb5GRTDxH9SNQelYxEZpGkVHPaFv2FwI" />
+                    </div>
+                    <div class="glass-panel p-8 rounded-xl shadow-2xl relative">
+                        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                            <div>
+                                <h3 class="text-2xl font-headline font-bold text-on-background">Senior Interaction
+                                    Designer</h3>
+                                <p class="text-secondary font-label text-xs uppercase tracking-widest font-bold mt-1">
+                                    NEON_CORE SYSTEMS // 2022 - 2024</p>
+                            </div>
+                            <div class="flex gap-2">
+                                <span
+                                    class="bg-surface-container-highest px-3 py-1 rounded-md text-[10px] text-secondary font-bold font-label uppercase">REACT_OS</span>
+                                <span
+                                    class="bg-surface-container-highest px-3 py-1 rounded-md text-[10px] text-secondary font-bold font-label uppercase">MOTION</span>
+                            </div>
+                        </div>
+                        <p class="text-on-surface-variant leading-relaxed mb-6">
+                            Developed the core component library used across the entire Neo-Tokyo smart city grid.
+                            Focused on tactile feedback loops and biometric authentication flows.
+                        </p>
+                        <div class="flex items-center gap-2 text-secondary/70 text-xs font-label uppercase">
+                            <span class="material-symbols-outlined text-sm">shield_lock</span>
+                            <span>Encryption Protocol: AES-512 Stable</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Portfolio Section -->
+        <section class="mb-48" id="portfolio">
+            <div class="flex items-center gap-4 mb-16">
+                <div class="h-[1px] w-24 bg-primary shadow-[0_0_10px_rgba(0,232,255,0.5)]"></div>
+                <h2 class="font-headline text-3xl font-black uppercase tracking-tighter">Project_Files</h2>
+                <div class="h-[1px] flex-grow bg-outline-variant/30"></div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- Project 1 -->
+                <div
+                    class="group relative overflow-hidden rounded-2xl glass-panel shadow-[0_10px_40px_rgba(0,232,255,0.05)]">
+                    <div class="aspect-video overflow-hidden">
+                        <img alt=""
+                            class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700"
+                            data-alt="Digital concept art of a glowing cyan blockchain network with geometric crystals floating in a dark digital space"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCwAet7yR0LMMw7U-_vSRl83-T8TIPAGhal9dnLN33QAO8-b41CkYNzOqOwdBpOeN6CiedpHIEooSC1da_0xmKo1_wzE625NfrRPVgI0UJYthNPi4KJ-EVtR9SGqqa1cP03zN_TUVLkvS1Wf1GEvI6N1jVGf-gdTz7TfVko3SJ5WwNvymdnhmrnYwnoajwvLG1AT4OlCt9iXFVTkEW-PMwJ9bmBJvmo5rQi-ZJazjSU8D9PQxISifqfHV-2QEY30A8Nn3W62Zx8HVt3" />
+                    </div>
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <h4
+                                class="text-xl font-headline font-bold text-on-background group-hover:text-primary transition-colors">
+                                PROJECT_NEBULA</h4>
+                            <span
+                                class="text-primary material-symbols-outlined group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform">north_east</span>
+                        </div>
+                        <p class="text-on-surface-variant text-sm font-light mb-6">A decentralized asset visualization
+                            dashboard utilizing WebGPU for real-time 3D market manipulation and predictive analysis.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span
+                                class="text-[10px] font-label font-bold text-secondary-fixed border border-secondary/20 px-2 py-1 rounded">VULKAN_API</span>
+                            <span
+                                class="text-[10px] font-label font-bold text-secondary-fixed border border-secondary/20 px-2 py-1 rounded">RUST_WASM</span>
+                        </div>
+                    </div>
+                    <div
+                        class="absolute inset-0 border border-primary/0 group-hover:border-primary/20 transition-all rounded-2xl pointer-events-none">
+                    </div>
+                </div>
+                <!-- Project 2 -->
+                <div
+                    class="group relative overflow-hidden rounded-2xl glass-panel shadow-[0_10px_40px_rgba(0,232,255,0.05)]">
+                    <div class="aspect-video overflow-hidden">
+                        <img alt=""
+                            class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700"
+                            data-alt="Abstract 3D rendering of flowing liquid metal with green and cyan iridescent reflections against a black background"
+                            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWwNSK8cZwafz1vNeL8ARxwxpWAneKiRpfh7lXufWZ2Xy8lvTJTWTdT2USIXLxHJMuPGU2aqICpqWOoI_xN7CG8s-h1mY1vRkTrOqcAGPh4gMG63m94axkaoNqgn-VP6vvrN8iyZD17Px7xIqBwx1n8vfbMVJSd47kdr_a2nhmb6Rmd5FG2Ssf_2wrTD2l0U988zYIptFZZsznPrsPqnmyHOePVdIRGWm6eo-B6hz61tQ7M-9QtED-uIki1B7PyrYCBoxd4VNEiYha" />
+                    </div>
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <h4
+                                class="text-xl font-headline font-bold text-on-background group-hover:text-primary transition-colors">
+                                AETHER_UI_OS</h4>
+                            <span
+                                class="text-primary material-symbols-outlined group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform">north_east</span>
+                        </div>
+                        <p class="text-on-surface-variant text-sm font-light mb-6">A custom operating system shell
+                            designed for next-gen wearable devices, focusing on zero-gravity information architecture.
+                        </p>
+                        <div class="flex flex-wrap gap-2">
+                            <span
+                                class="text-[10px] font-label font-bold text-secondary-fixed border border-secondary/20 px-2 py-1 rounded">SPATIAL_JS</span>
+                            <span
+                                class="text-[10px] font-label font-bold text-secondary-fixed border border-secondary/20 px-2 py-1 rounded">GLSL</span>
+                        </div>
+                    </div>
+                    <div
+                        class="absolute inset-0 border border-primary/0 group-hover:border-primary/20 transition-all rounded-2xl pointer-events-none">
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Contact Section -->
+        <section class="mb-48" id="contact">
+            <div
+                class="glass-panel p-8 md:p-16 rounded-[2rem] border-primary/10 shadow-[0_0_60px_rgba(0,232,255,0.05)]">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+                    <div>
+                        <h2 class="font-headline text-4xl font-black mb-8 leading-tight">INITIALIZE_CONNECTION</h2>
+                        <p class="text-on-surface-variant mb-12 text-lg">Ready to upgrade your system architecture?
+                            Leave a packet below and my node will reach out to yours within 24 standard cycles.</p>
+                        <div class="space-y-6">
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-surface-container-highest flex items-center justify-center text-primary">
+                                    <span class="material-symbols-outlined">alternate_email</span>
+                                </div>
+                                <span class="font-headline text-lg tracking-tight">u-id@nebula.sys</span>
+                            </div>
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="w-12 h-12 rounded-xl bg-surface-container-highest flex items-center justify-center text-secondary">
+                                    <span class="material-symbols-outlined">terminal</span>
+                                </div>
+                                <span class="font-headline text-lg tracking-tight">root://terminal.access</span>
+                            </div>
+                        </div>
+                    </div>
+                    <form class="space-y-6">
+                        <div class="space-y-2">
+                            <label
+                                class="font-label text-xs uppercase tracking-widest text-on-surface-variant px-1">Source_Identifier</label>
+                            <input
+                                class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-6 py-4 text-on-surface placeholder:text-outline/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all"
+                                placeholder="Your Name" type="text" />
+                        </div>
+                        <div class="space-y-2">
+                            <label
+                                class="font-label text-xs uppercase tracking-widest text-on-surface-variant px-1">Network_Protocol</label>
+                            <input
+                                class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-6 py-4 text-on-surface placeholder:text-outline/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all"
+                                placeholder="Email Address" type="email" />
+                        </div>
+                        <div class="space-y-2">
+                            <label
+                                class="font-label text-xs uppercase tracking-widest text-on-surface-variant px-1">Payload_Data</label>
+                            <textarea
+                                class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-6 py-4 text-on-surface placeholder:text-outline/40 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all"
+                                placeholder="Brief project overview..." rows="4"></textarea>
+                        </div>
+                        <button
+                            class="w-full bg-primary py-4 rounded-xl text-on-primary font-headline font-black uppercase tracking-[0.2em] shadow-[0_0_20px_rgba(0,232,255,0.3)] hover:brightness-110 active:scale-95 transition-all"
+                            type="submit">ESTABLISH_LINK</button>
+                    </form>
+                </div>
+                <div class="mt-16 pt-16 border-t border-white/5 flex justify-center gap-8">
+                    <a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span
+                            class="material-symbols-outlined scale-125">public</span></a>
+                    <a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span
+                            class="material-symbols-outlined scale-125">data_object</span></a>
+                    <a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span
+                            class="material-symbols-outlined scale-125">share</span></a>
+                    <a class="text-on-surface-variant hover:text-primary transition-colors" href="#"><span
+                            class="material-symbols-outlined scale-125">smart_toy</span></a>
+                </div>
+            </div>
+        </section>
+    </main>
+    <!-- Footer Shell -->
+    <footer class="w-full py-12">
+        <div class="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-4">
+            <span class="font-['Space_Grotesk'] text-[10px] tracking-[0.2em] text-[#7CF700] font-bold">KINETIC NEBULA
+                SYSTEM</span>
+            <span class="font-['Space_Grotesk'] text-[10px] tracking-[0.2em] text-slate-600">2026 KINETIC NEBULA SYSTEM
+                // ALL RIGHTS RESERVED</span>
+            <div class="flex gap-6">
+                <a class="font-['Space_Grotesk'] text-[10px] tracking-[0.2em] text-slate-600 hover:text-[#7CF700] transition-colors opacity-70 hover:opacity-100"
+                    href="#">TERMINAL</a>
+                <a class="font-['Space_Grotesk'] text-[10px] tracking-[0.2em] text-slate-600 hover:text-[#7CF700] transition-colors opacity-70 hover:opacity-100"
+                    href="#">SYSTEM_STATUS</a>
+                <a class="font-['Space_Grotesk'] text-[10px] tracking-[0.2em] text-slate-600 hover:text-[#7CF700] transition-colors opacity-70 hover:opacity-100"
+                    href="#">ENCRYPTED_LOGS</a>
+            </div>
+        </div>
+    </footer>
+    <!-- Mobile Navigation Shell -->
+    <nav
+        class="md:hidden fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-8 bg-[#1A1A23]/60 backdrop-blur-2xl">
+        <div
+            class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md rounded-2xl border border-white/10 flex justify-around items-center py-2 shadow-[0_20px_50px_rgba(0,232,255,0.15)] overflow-hidden">
+            <a class="flex flex-col items-center justify-center bg-cyan-500/20 text-cyan-400 rounded-xl px-4 py-2 shadow-[inset_0_0_10px_rgba(0,232,255,0.2)] animate-float hover:-translate-y-1 active:scale-90 transition-all"
+                href="#home">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+                <span class="font-['Manrope'] text-[10px] font-bold uppercase tracking-tight">Home</span>
+            </a>
+            <a class="flex flex-col items-center justify-center text-slate-500 px-4 py-2 hover:text-white transition-all animate-float hover:-translate-y-1 active:scale-90"
+                href="#experience">
+                <span class="material-symbols-outlined">layers</span>
+                <span class="font-['Manrope'] text-[10px] font-bold uppercase tracking-tight">Work</span>
+            </a>
+            <a class="flex flex-col items-center justify-center text-slate-500 px-4 py-2 hover:text-white transition-all animate-float hover:-translate-y-1 active:scale-90"
+                href="#portfolio">
+                <span class="material-symbols-outlined">rocket_launch</span>
+                <span class="font-['Manrope'] text-[10px] font-bold uppercase tracking-tight">Files</span>
+            </a>
+            <a class="flex flex-col items-center justify-center text-slate-500 px-4 py-2 hover:text-white transition-all animate-float hover:-translate-y-1 active:scale-90"
+                href="#contact">
+                <span class="material-symbols-outlined">alternate_email</span>
+                <span class="font-['Manrope'] text-[10px] font-bold uppercase tracking-tight">Mail</span>
+            </a>
+        </div>
+    </nav>
+</body>
+
+</html>

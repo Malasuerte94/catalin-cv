@@ -1,0 +1,179 @@
+# Production overrides — Traefik handles SSL & routing (runs externally on VPS)
+services:
+  redis:
+    container_name: catalin-ene-redis-prod
+    env_file:
+      - .env.prod
+    command: redis-server --requirepass ${REDIS_PASSWORD} --appendonly yes
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.25'
+
+  postgres:
+    container_name: catalin-ene-postgres-prod
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data_prod:/var/lib/postgresql/data
+
+  migrate:
+    build:
+      context: .
+      dockerfile: .docker/backend.Dockerfile
+      target: migrate
+    container_name: catalin-ene-migrate
+    env_file:
+      - .env.prod
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - catalin-ene-network
+    restart: "no"
+
+  imgproxy:
+    image: darthsim/imgproxy:v3.24
+    container_name: catalin-ene-imgproxy-prod
+    environment:
+      - IMGPROXY_LOCAL_FILESYSTEM_ROOT=/uploads
+      - IMGPROXY_USE_ETAG=true
+      - IMGPROXY_ENABLE_WEBP_DETECTION=true
+      - IMGPROXY_ENFORCE_WEBP=true
+      - IMGPROXY_ENABLE_AVIF_DETECTION=true
+      - IMGPROXY_QUALITY=85
+      - IMGPROXY_MAX_SRC_FILE_SIZE=50000000
+      - IMGPROXY_CACHE_CONTROL_PASSTHROUGH=true
+      - IMGPROXY_USE_LAST_MODIFIED=true
+    volumes:
+      - uploads_data:/uploads:ro
+    networks:
+      - catalin-ene-network
+      - webproxy
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=webproxy"
+      - "traefik.http.routers.ce-uploads.rule=Host(`${DOMAIN}`) && PathPrefix(`/uploads`)"
+      - "traefik.http.routers.ce-uploads.entrypoints=websecure"
+      - "traefik.http.routers.ce-uploads.tls.certresolver=myresolver"
+      - "traefik.http.routers.ce-uploads.priority=25"
+      - "traefik.http.routers.ce-uploads.service=ce-imgproxy-svc"
+      - "traefik.http.services.ce-imgproxy-svc.loadbalancer.server.port=8080"
+      - "traefik.http.middlewares.ce-uploads-strip.stripprefix.prefixes=/uploads"
+      - "traefik.http.middlewares.ce-uploads-prefix.addprefix.prefix=/insecure/plain/local:///"
+      - "traefik.http.routers.ce-uploads.middlewares=ce-uploads-strip,ce-uploads-prefix"
+
+  backend:
+    build:
+      target: prod
+    container_name: catalin-ene-backend-prod
+    env_file:
+      - .env.prod
+    environment:
+      - NODE_ENV=production
+      - TZ=${TZ:-UTC}
+    volumes:
+      - uploads_data:/app/uploads
+      - invoices_data:/app/invoices
+      - backups_data:/app/database_backups
+      - ./logs:/app/logs
+    networks:
+      - catalin-ene-network
+      - webproxy
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:3000/health || exit 1"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 60s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=webproxy"
+      # /api routes
+      - "traefik.http.routers.ce-api.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.ce-api.entrypoints=websecure"
+      - "traefik.http.routers.ce-api.tls.certresolver=myresolver"
+      - "traefik.http.routers.ce-api.priority=30"
+      - "traefik.http.routers.ce-api.service=ce-api-svc"
+      - "traefik.http.services.ce-api-svc.loadbalancer.server.port=3000"
+      # /socket.io websocket
+      - "traefik.http.routers.ce-ws.rule=Host(`${DOMAIN}`) && PathPrefix(`/socket.io`)"
+      - "traefik.http.routers.ce-ws.entrypoints=websecure"
+      - "traefik.http.routers.ce-ws.tls.certresolver=myresolver"
+      - "traefik.http.routers.ce-ws.priority=25"
+      - "traefik.http.routers.ce-ws.service=ce-api-svc"
+      # /health endpoint
+      - "traefik.http.routers.ce-health.rule=Host(`${DOMAIN}`) && Path(`/health`)"
+      - "traefik.http.routers.ce-health.entrypoints=websecure"
+      - "traefik.http.routers.ce-health.tls.certresolver=myresolver"
+      - "traefik.http.routers.ce-health.priority=25"
+      - "traefik.http.routers.ce-health.service=ce-api-svc"
+
+  frontend:
+    build:
+      target: prod
+      args:
+        - VITE_API_BASE_URL=${VITE_API_BASE_URL:-/api}
+    container_name: catalin-ene-frontend-prod
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - catalin-ene-network
+      - webproxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=webproxy"
+      # Catch-all for frontend SPA (lowest priority)
+      - "traefik.http.routers.ce-frontend.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.ce-frontend.entrypoints=websecure"
+      - "traefik.http.routers.ce-frontend.tls.certresolver=myresolver"
+      - "traefik.http.routers.ce-frontend.priority=10"
+      - "traefik.http.routers.ce-frontend.service=ce-frontend-svc"
+      - "traefik.http.services.ce-frontend-svc.loadbalancer.server.port=3010"
+      # HTTP → HTTPS redirect
+      - "traefik.http.routers.ce-frontend-http.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.ce-frontend-http.entrypoints=web"
+      - "traefik.http.routers.ce-frontend-http.middlewares=ce-redirect-https"
+      - "traefik.http.routers.ce-frontend-http.service=ce-frontend-svc"
+      - "traefik.http.middlewares.ce-redirect-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.ce-redirect-https.redirectscheme.permanent=true"
+
+  portainer:
+    container_name: catalin-ene-portainer-prod
+    networks:
+      - catalin-ene-network
+      - webproxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=webproxy"
+      - "traefik.http.routers.ce-portainer.rule=Host(`${DOMAIN}`) && PathPrefix(`/portainer`)"
+      - "traefik.http.routers.ce-portainer.entrypoints=websecure"
+      - "traefik.http.routers.ce-portainer.tls.certresolver=myresolver"
+      - "traefik.http.routers.ce-portainer.priority=20"
+      - "traefik.http.routers.ce-portainer.service=ce-portainer-svc"
+      - "traefik.http.services.ce-portainer-svc.loadbalancer.server.port=9000"
+      - "traefik.http.middlewares.ce-portainer-strip.stripprefix.prefixes=/portainer"
+      - "traefik.http.routers.ce-portainer.middlewares=ce-portainer-strip"
+
+volumes:
+  postgres_data_prod:
+    driver: local
+  uploads_data:
+    driver: local
+  invoices_data:
+    driver: local
+  backups_data:
+    driver: local
+
+networks:
+  webproxy:
+    external: true
