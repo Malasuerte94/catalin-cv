@@ -29,7 +29,7 @@ export interface ContactUrl {
 
 export interface BackgroundKeyframe {
   id: number;
-  scrollPercent: number;
+  sectionId: string;
   posX: string;
   posY: string;
   posZ: string;

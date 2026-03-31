@@ -143,7 +143,7 @@
             <table class="w-full text-left">
               <thead class="bg-white/5 font-label text-[10px] uppercase tracking-widest text-slate-400">
                 <tr>
-                  <th class="px-6 py-4">Scroll %</th>
+                  <th class="px-6 py-4">Section ID</th>
                   <th class="px-6 py-4">Position (X,Y,Z)</th>
                   <th class="px-6 py-4">Rotation (X,Y,Z)</th>
                   <th class="px-6 py-4">Scale</th>
@@ -152,7 +152,7 @@
               </thead>
               <tbody class="divide-y divide-white/5">
                 <tr v-for="kf in dataStore.backgroundKeyframes" :key="kf.id" class="hover:bg-white/5 transition-colors">
-                  <td class="px-6 py-4 font-headline font-bold text-primary">{{ kf.scrollPercent }}%</td>
+                  <td class="px-6 py-4 font-headline font-bold text-primary capitalize">{{ kf.sectionId }}</td>
                   <td class="px-6 py-4 text-xs text-slate-300">{{ kf.posX }}, {{ kf.posY }}, {{ kf.posZ }}</td>
                   <td class="px-6 py-4 text-xs text-slate-300">{{ kf.rotX }}, {{ kf.rotY }}, {{ kf.rotZ }}</td>
                   <td class="px-6 py-4 text-xs text-slate-300">{{ kf.scale }}</td>
@@ -260,8 +260,13 @@
           <!-- 3D Config Form -->
           <template v-if="modal.type === 'config3d'">
             <div class="col-span-2 space-y-2">
-              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Scroll Percentage (0-100)</label>
-              <input v-model.number="form.config3d.scrollPercent" type="number" min="0" max="100" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
+              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Target Section</label>
+              <select v-model="form.config3d.sectionId" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required>
+                <option value="home">Home (Hero)</option>
+                <option value="experience">Experience</option>
+                <option value="portfolio">Projects</option>
+                <option value="contact">Contact</option>
+              </select>
             </div>
             <div class="space-y-2">
               <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Position X</label>
@@ -337,7 +342,7 @@ const form = reactive({
   project: { title: '', description: '', imageUrl: '', logoUrl: '', projectUrl: '', gallery: [] as string[] },
   experience: { role: '', company: '', companyLogo: '', period: '', description: '', isCurrent: false },
   contact: { platform: '', url: '', icon: '' },
-  config3d: { scrollPercent: 0, posX: '0', posY: '0', posZ: '0', rotX: '0', rotY: '0', rotZ: '0', scale: '1' },
+  config3d: { sectionId: 'home', posX: '0', posY: '0', posZ: '0', rotX: '0', rotY: '0', rotZ: '0', scale: '1' },
 });
 
 onMounted(() => {
@@ -361,7 +366,7 @@ const resetForm = () => {
   form.project = { title: '', description: '', imageUrl: '', logoUrl: '', projectUrl: '', gallery: [] };
   form.experience = { role: '', company: '', companyLogo: '', period: '', description: '', isCurrent: false };
   form.contact = { platform: '', url: '', icon: '' };
-  form.config3d = { scrollPercent: 0, posX: '0', posY: '0', posZ: '0', rotX: '0', rotY: '0', rotZ: '0', scale: '1' };
+  form.config3d = { sectionId: 'home', posX: '0', posY: '0', posZ: '0', rotX: '0', rotY: '0', rotZ: '0', scale: '1' };
 };
 
 const editItem = (type: string, item: any) => {

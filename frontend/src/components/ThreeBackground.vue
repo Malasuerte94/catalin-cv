@@ -102,30 +102,52 @@ const init = () => {
 
     if (model) {
       const scrollY = window.scrollY;
-      const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
-      const scrollPercent = Math.max(0, Math.min(100, (scrollY / (maxScroll || 1)) * 100));
-
-      const keyframes = dataStore.backgroundKeyframes;
+      const clientHeight = window.innerHeight;
+      const scrollHeight = document.documentElement.scrollHeight;
+      const maxScroll = scrollHeight - clientHeight;
       
-      if (keyframes.length > 0) {
-        // Find current segment
+      // Current scroll as a value from 0 to maxScroll
+      const currentScroll = Math.max(0, Math.min(scrollY, maxScroll));
+
+      const rawKeyframes = dataStore.backgroundKeyframes;
+      
+      if (rawKeyframes.length > 0) {
+        // Map keyframes to their actual scroll positions on the page
+        const keyframesWithPos = rawKeyframes.map(kf => {
+          const el = document.getElementById(kf.sectionId);
+          let pos = 0;
+          if (el) {
+            // We want the trigger point to be when the section's top is at middle of screen
+            // or for the first section (usually home), at the very top.
+            const rect = el.getBoundingClientRect();
+            const absoluteTop = rect.top + scrollY;
+            
+            // Adjust position: we want the keyframe to be fully reached when 
+            // the section top is roughly at 1/2 of the viewport
+            pos = kf.sectionId === 'home' ? 0 : Math.max(0, absoluteTop - clientHeight / 2);
+          }
+          return { ...kf, absolutePos: pos };
+        }).sort((a, b) => a.absolutePos - b.absolutePos);
+
+        // Find the current segment
         let startIdx = 0;
-        for (let i = 0; i < keyframes.length; i++) {
-          if (keyframes[i].scrollPercent <= scrollPercent) {
+        for (let i = 0; i < keyframesWithPos.length; i++) {
+          if (keyframesWithPos[i].absolutePos <= currentScroll) {
             startIdx = i;
           } else {
             break;
           }
         }
         
-        let endIdx = Math.min(startIdx + 1, keyframes.length - 1);
-        const startK = keyframes[startIdx];
-        const endK = keyframes[endIdx];
+        let endIdx = Math.min(startIdx + 1, keyframesWithPos.length - 1);
+        const startK = keyframesWithPos[startIdx];
+        const endK = keyframesWithPos[endIdx];
         
         let t = 0;
         if (startIdx !== endIdx) {
-          const range = endK.scrollPercent - startK.scrollPercent;
-          t = (scrollPercent - startK.scrollPercent) / (range || 1);
+          const range = endK.absolutePos - startK.absolutePos;
+          t = (currentScroll - startK.absolutePos) / (range || 1);
+          t = Math.max(0, Math.min(1, t)); // Clamp t
         }
 
         // Interpolate

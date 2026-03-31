@@ -41,7 +41,7 @@ export const contactUrls = pgTable("contact_urls", {
 
 export const backgroundKeyframes = pgTable("background_keyframes", {
   id: serial("id").primaryKey(),
-  scrollPercent: integer("scroll_percent").notNull(), // 0 to 100
+  sectionId: varchar("section_id", { length: 100 }).notNull(), // e.g., 'home', 'experience', 'portfolio', 'contact'
   posX: text("pos_x").notNull().default("0"),
   posY: text("pos_y").notNull().default("0"),
   posZ: text("pos_z").notNull().default("0"),

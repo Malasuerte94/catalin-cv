@@ -100,7 +100,7 @@ app.get('/api/contact-urls', async (req, res) => {
 
 app.get('/api/background-keyframes', async (req, res) => {
   try {
-    const data = await db.select().from(backgroundKeyframes).orderBy(asc(backgroundKeyframes.scrollPercent));
+    const data = await db.select().from(backgroundKeyframes);
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch keyframes' });
