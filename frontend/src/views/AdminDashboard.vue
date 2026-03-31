@@ -151,7 +151,7 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-white/5">
-                <tr v-for="kf in dataStore.backgroundKeyframes" :key="kf.id" class="hover:bg-white/5 transition-colors">
+                <tr v-for="kf in sortedKeyframes" :key="kf.id" class="hover:bg-white/5 transition-colors">
                   <td class="px-6 py-4 font-headline font-bold text-primary capitalize">{{ kf.sectionId }}</td>
                   <td class="px-6 py-4 text-xs text-slate-300">{{ kf.posX }}, {{ kf.posY }}, {{ kf.posZ }}</td>
                   <td class="px-6 py-4 text-xs text-slate-300">{{ kf.rotX }}, {{ kf.rotY }}, {{ kf.rotZ }}</td>
@@ -311,7 +311,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import { useDataStore } from '../stores/data';
@@ -322,6 +322,14 @@ import RichTextEditor from '../components/RichTextEditor.vue';
 const router = useRouter();
 const authStore = useAuthStore();
 const dataStore = useDataStore();
+
+const SECTION_ORDER = ['home', 'experience', 'portfolio', 'contact'];
+
+const sortedKeyframes = computed(() => {
+  return [...dataStore.backgroundKeyframes].sort((a, b) => {
+    return SECTION_ORDER.indexOf(a.sectionId) - SECTION_ORDER.indexOf(b.sectionId);
+  });
+});
 
 const currentTab = ref('projects');
 const tabs = [

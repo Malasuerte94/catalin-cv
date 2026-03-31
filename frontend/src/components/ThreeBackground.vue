@@ -27,14 +27,14 @@ const init = () => {
   scene = new THREE.Scene();
   
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  camera.position.z = 10;
+  camera.position.z = 5;
 
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
   
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
   
   container.value.appendChild(renderer.domElement);
 
@@ -42,8 +42,8 @@ const init = () => {
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.3);
   scene.add(ambientLight);
 
-  const spotLight = new THREE.SpotLight(0x87efff, 2500);
-  spotLight.position.set(-15, 15, 15);
+  const spotLight = new THREE.SpotLight(0x87efff, 1500);
+  spotLight.position.set(-10, 10, 10);
   spotLight.angle = Math.PI / 6;
   spotLight.penumbra = 0.4;
   spotLight.decay = 2;
@@ -58,7 +58,7 @@ const init = () => {
   const planeGeometry = new THREE.PlaneGeometry(100, 100);
   const planeMaterial = new THREE.MeshPhongMaterial({ color: 0x0e0e11, shininess: 0 });
   shadowPlane = new THREE.Mesh(planeGeometry, planeMaterial);
-  shadowPlane.position.z = -5;
+  shadowPlane.position.z = -2;
   shadowPlane.receiveShadow = true;
   scene.add(shadowPlane);
 
