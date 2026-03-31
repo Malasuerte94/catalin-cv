@@ -1,1 +1,95 @@
 @import "tailwindcss";
+
+@theme {
+  --color-secondary-fixed: #83ff16;
+  --color-surface-variant: #25252a;
+  --color-primary: #87efff;
+  --color-on-tertiary: #420d00;
+  --color-primary-fixed: #00e7fd;
+  --color-primary-fixed-dim: #00d7ed;
+  --color-on-surface-variant: #acaaae;
+  --color-on-secondary-fixed-variant: #316800;
+  --color-on-secondary: #2b5d00;
+  --color-inverse-primary: #006974;
+  --color-background: #0e0e11;
+  --color-inverse-surface: #fcf8fd;
+  --color-secondary: #83ff16;
+  --color-outline: #767579;
+  --color-surface-container-high: #1f1f23;
+  --color-on-background: #f0edf1;
+  --color-surface-container-low: #131316;
+  --color-surface-dim: #0e0e11;
+  --color-on-tertiary-container: #0e0100;
+  --color-on-primary-container: #004f58;
+  --color-on-secondary-fixed: #204800;
+  --color-secondary-fixed-dim: #78ef00;
+  --color-surface-bright: #2c2c30;
+  --color-inverse-on-surface: #555458;
+  --color-on-primary-fixed: #003a41;
+  --color-tertiary: #ff7346;
+  --color-surface: #0e0e11;
+  --color-tertiary-fixed-dim: #ff7d54;
+  --color-surface-container-highest: #25252a;
+  --color-tertiary-dim: #ff7346;
+  --color-surface-tint: #87efff;
+  --color-outline-variant: #48474b;
+  --color-surface-container-lowest: #000000;
+  --color-error-container: #9f0519;
+  --color-on-primary-fixed-variant: #005963;
+  --color-error: #ff716c;
+  --color-on-tertiary-fixed-variant: #6e1c00;
+  --color-tertiary-fixed: #ff9473;
+  --color-secondary-dim: #78ef00;
+  --color-on-secondary-container: #e9ffd3;
+  --color-on-tertiary-fixed: #340800;
+  --color-primary-dim: #00d7ed;
+  --color-primary-container: #00e7fd;
+  --color-error-dim: #d7383b;
+  --color-on-error: #490006;
+  --color-on-error-container: #ffa8a3;
+  --color-secondary-container: #326b00;
+  --color-tertiary-container: #fc4c00;
+  --color-on-surface: #f0edf1;
+  --color-surface-container: #19191d;
+  --color-on-primary: #005962;
+
+  --font-headline: "Space Grotesk", sans-serif;
+  --font-body: "Manrope", sans-serif;
+  --font-label: "Space Grotesk", sans-serif;
+
+  --radius-DEFAULT: 0.25rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+}
+
+@layer base {
+  body {
+    @apply bg-background font-body text-on-surface selection:bg-primary selection:text-on-primary overflow-x-hidden;
+    min-height: max(884px, 100dvh);
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .glass-panel {
+    background: rgba(25, 25, 29, 0.4);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(72, 71, 75, 0.15);
+  }
+
+  .glow-cyan {
+    text-shadow: 0 0 10px rgba(0, 232, 255, 0.4);
+  }
+
+  .glow-green {
+    text-shadow: 0 0 8px rgba(124, 247, 0, 0.3);
+  }
+
+  .bg-nebula {
+    background-image: radial-gradient(circle at 50% 50%, rgba(0, 231, 253, 0.03) 0%, transparent 70%);
+  }
+
+  .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  }
+}

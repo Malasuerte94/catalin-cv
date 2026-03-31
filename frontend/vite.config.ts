@@ -11,5 +11,11 @@ export default defineConfig({
     host: true,
     port: 3010,
     strictPort: true,
+    proxy: {
+      '/api': {
+        target: 'http://backend:3000',
+        changeOrigin: true,
+      },
+    },
   },
 });

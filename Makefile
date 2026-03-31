@@ -1,7 +1,7 @@
 # catalin-ene - Docker Makefile
 # Usage: make [target]
 
-.PHONY: help dev dev-up dev-down sync logs dev-logs-backend clean-images status status-prod deploy restart-prod stop-prod logs-prod db-migrate db-generate-migration add add-fe clean-modules db-seed seed-required seed-required-prod db-truncate vite-reset db-push db-wipe db-wipe-prod generate-admin generate-admin-prod
+.PHONY: help dev dev-up dev-down sync logs dev-logs-backend clean-images status status-prod deploy restart-prod stop-prod logs-prod db-migrate db-generate-migration add add-fe clean-modules db-seed db-truncate vite-reset db-push db-wipe db-wipe-prod generate-admin generate-admin-prod
 
 DOCKER_COMPOSE := $(shell if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then echo "docker compose"; elif command -v docker-compose >/dev/null 2>&1; then echo "docker-compose"; else echo ""; fi)
 
@@ -37,7 +37,6 @@ help:
 	@echo "  db-migrate       - Run DB migrations"
 	@echo "  db-generate-migration - Generate new migration"
 	@echo "  db-seed          - Seed DB with Romanian sample data"
-	@echo "  seed-required    - Run essential system seeders (e.g. emails)"
 	@echo "  db-truncate      - Truncate bookings and invoices tables"
 	@echo "  db-wipe          - Wipe database (drop all tables)"
 	@echo "  generate-admin   - Create admin (Usage: make generate-admin EMAIL=... PASSWORD=...)"
@@ -49,7 +48,6 @@ help:
 	@echo "  status-prod      - Check production service status"
 	@echo "  logs-prod        - View production logs"
 	@echo "  stop-prod        - Stop production containers"
-	@echo "  seed-required-prod - Run essential system seeders on prod"
 	@echo "  db-wipe-prod     - Wipe production database (drop all tables)"
 	@echo "  generate-admin-prod - Create admin on prod (Usage: make generate-admin-prod EMAIL=... PASSWORD=...)"
 	@echo ""
@@ -117,11 +115,6 @@ db-seed: detect-docker-compose
 	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml --env-file .env exec -T postgres psql -U catalin_ene -d catalin_ene_dev < backend/drizzle/seed.sql
 	@echo "✅ Database seeded!"
 
-seed-required: detect-docker-compose
-	@echo "🌱 Running required system seeders..."
-	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml exec backend bun run db:seed:emails
-	@echo "✅ Required seeding complete!"
-
 db-truncate: detect-docker-compose
 	@echo "🗑️  Truncating all transactional data (except essential system tables)..."
 	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml --env-file .env exec -T postgres psql -U catalin_ene -d catalin_ene_dev -c "TRUNCATE TABLE invoices, bookings, reviews, ical_blocked_dates, ical_feeds, unit_blocked_days, unit_pricing_rules, units, properties RESTART IDENTITY CASCADE;"
@@ -135,20 +128,20 @@ db-wipe: detect-docker-compose
 generate-admin: detect-docker-compose
 	@if [ -z "$(EMAIL)" ] || [ -z "$(PASSWORD)" ]; then echo "Usage: make generate-admin EMAIL=admin@example.com PASSWORD=secret"; exit 1; fi
 	@echo "👤 Creating admin user..."
-	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml exec backend bun run scripts/generate-admin.ts --email=$(EMAIL) --password=$(PASSWORD)
+	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml exec backend bun run db:generate-admin --email=$(EMAIL) --password=$(PASSWORD)
 
 db-backup: detect-docker-compose
 	@echo "🗄️  Creating database backup..."
-	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml exec backend bun run scripts/db-backup.ts
+	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml exec backend bun run db:backup
 
 db-restore: detect-docker-compose
 	@echo "🔄 Restoring latest database backup..."
-	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml exec backend bun run scripts/db-restore.ts
+	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml exec backend bun run db:restore
 
 db-restore-name: detect-docker-compose
 	@if [ -z "$(NAME)" ]; then echo "Usage: make db-restore-name NAME=filename.sql"; exit 1; fi
 	@echo "🔄 Restoring database backup: $(NAME)..."
-	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml exec backend bun run scripts/db-restore.ts $(NAME)
+	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml exec backend bun run db:restore $(NAME)
 
 db-generate-migration: detect-docker-compose
 	@echo "📝 Generating migration..."
@@ -223,10 +216,6 @@ stop-prod: detect-docker-compose
 	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod down
 	@echo "✅ Production stopped!"
 
-seed-required-prod: detect-docker-compose
-	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod exec backend bun run db:seed:emails
-	@echo "✅ Required seeding complete!"
-
 db-truncate-prod: detect-docker-compose
 	@echo "🗑️  Truncating all transactional data on production..."
 	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod exec -T postgres sh -c 'psql -U "$$POSTGRES_USER" -d "$$POSTGRES_DB" -c "TRUNCATE TABLE invoices, bookings, reviews, ical_blocked_dates, ical_feeds, unit_blocked_days, unit_pricing_rules, units, properties RESTART IDENTITY CASCADE;"'
@@ -240,4 +229,4 @@ db-wipe-prod: detect-docker-compose
 generate-admin-prod: detect-docker-compose
 	@if [ -z "$(EMAIL)" ] || [ -z "$(PASSWORD)" ]; then echo "Usage: make generate-admin-prod EMAIL=admin@example.com PASSWORD=secret"; exit 1; fi
 	@echo "👤 Creating admin user on production..."
-	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod exec backend bun run scripts/generate-admin.ts --email=$(EMAIL) --password=$(PASSWORD)
+	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod exec backend bun run db:generate-admin --email=$(EMAIL) --password=$(PASSWORD)

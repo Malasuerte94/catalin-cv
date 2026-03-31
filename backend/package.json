@@ -7,7 +7,7 @@
     "build": "bun build src/index.ts --outdir dist --target bun",
     "migrate": "bun src/db/migrate.ts",
     "migrate:generate": "drizzle-kit generate",
-    "db:seed:emails": "bun src/db/seed-emails.ts"
+    "db:generate-admin": "bun src/scripts/generate-admin.ts"
   },
   "dependencies": {
     "@types/node-cron": "^3.0.11",
