@@ -133,21 +133,21 @@ generate-admin: detect-docker-compose
 db-backup: detect-docker-compose
 	@echo "🗄️  Creating database backup..."
 	@mkdir -p backups
-	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml --env-file .env exec -T postgres pg_dump -U catalin_ene catalin_ene_dev > backups/backup_$$(date +%Y%m%d_%H%M%S).sql
+	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml --env-file .env exec -T postgres pg_dump -U catalin_ene --clean --if-exists --no-owner --no-privileges catalin_ene_dev > backups/backup_$$(date +%Y%m%d_%H%M%S).sql
 	@rm -f backups/latest.sql && ln -sf $$(ls -t backups/backup_*.sql | head -n 1 | xargs basename) backups/latest.sql
 	@echo "✅ Backup created in backups/ latest is backups/latest.sql"
 
 db-restore: detect-docker-compose
 	@if [ ! -f backups/latest.sql ]; then echo "❌ backups/latest.sql not found!"; exit 1; fi
 	@echo "🔄 Restoring latest database backup..."
-	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml --env-file .env exec -T postgres psql -U catalin_ene -d catalin_ene_dev < backups/latest.sql
+	@cat backups/latest.sql | $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml --env-file .env exec -i postgres psql -U catalin_ene -d catalin_ene_dev
 	@echo "✅ Database restored!"
 
 db-restore-name: detect-docker-compose
 	@if [ -z "$(NAME)" ]; then echo "Usage: make db-restore-name NAME=backup_YYYYMMDD_HHMMSS.sql"; exit 1; fi
 	@if [ ! -f backups/$(NAME) ]; then echo "❌ backups/$(NAME) not found!"; exit 1; fi
 	@echo "🔄 Restoring database backup: $(NAME)..."
-	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml --env-file .env exec -T postgres psql -U catalin_ene -d catalin_ene_dev < backups/$(NAME)
+	@cat backups/$(NAME) | $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml --env-file .env exec -i postgres psql -U catalin_ene -d catalin_ene_dev
 	@echo "✅ Database restored from $(NAME)!"
 
 # Production DB Commands
@@ -156,7 +156,7 @@ db-backup-prod: detect-docker-compose
 	@echo "🗄️  Creating production database backup..."
 	@mkdir -p backups/prod
 	@export $$(grep -v '^#' .env.prod | xargs) && \
-	$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod exec -T postgres pg_dump -U $$DB_USER $$DB_NAME > backups/prod/backup_prod_$$(date +%Y%m%d_%H%M%S).sql
+	$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod exec -T postgres pg_dump -U $$DB_USER --clean --if-exists --no-owner --no-privileges $$DB_NAME > backups/prod/backup_prod_$$(date +%Y%m%d_%H%M%S).sql
 	@rm -f backups/prod/latest_prod.sql && ln -sf $$(ls -t backups/prod/backup_prod_*.sql | head -n 1 | xargs basename) backups/prod/latest_prod.sql
 	@echo "✅ Production backup created in backups/prod/ latest is backups/prod/latest_prod.sql"
 
@@ -165,7 +165,7 @@ db-restore-prod: detect-docker-compose
 	@if [ ! -f backups/prod/latest_prod.sql ]; then echo "❌ backups/prod/latest_prod.sql not found!"; exit 1; fi
 	@echo "🔄 Restoring latest production database backup..."
 	@export $$(grep -v '^#' .env.prod | xargs) && \
-	$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod exec -T postgres psql -U $$DB_USER -d $$DB_NAME < backups/prod/latest_prod.sql
+	cat backups/prod/latest_prod.sql | $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod exec -i postgres psql -U $$DB_USER -d $$DB_NAME
 	@echo "✅ Production database restored!"
 
 db-restore-name-prod: detect-docker-compose
@@ -174,7 +174,7 @@ db-restore-name-prod: detect-docker-compose
 	@if [ ! -f backups/prod/$(NAME) ]; then echo "❌ backups/prod/$(NAME) not found!"; exit 1; fi
 	@echo "🔄 Restoring production database backup: $(NAME)..."
 	@export $$(grep -v '^#' .env.prod | xargs) && \
-	$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod exec -T postgres psql -U $$DB_USER -d $$DB_NAME < backups/prod/$(NAME)
+	cat backups/prod/$(NAME) | $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod exec -i postgres psql -U $$DB_USER -d $$DB_NAME
 	@echo "✅ Production database restored from $(NAME)!"
 
 db-generate-migration: detect-docker-compose
