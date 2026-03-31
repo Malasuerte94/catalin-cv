@@ -132,16 +132,23 @@ generate-admin: detect-docker-compose
 
 db-backup: detect-docker-compose
 	@echo "🗄️  Creating database backup..."
-	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml exec backend bun run db:backup
+	@mkdir -p backups
+	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml --env-file .env exec -T postgres pg_dump -U catalin_ene catalin_ene_dev > backups/backup_$$(date +%Y%m%d_%H%M%S).sql
+	@rm -f backups/latest.sql && ln -sf $$(ls -t backups/backup_*.sql | head -n 1 | xargs basename) backups/latest.sql
+	@echo "✅ Backup created in backups/ latest is backups/latest.sql"
 
 db-restore: detect-docker-compose
+	@if [ ! -f backups/latest.sql ]; then echo "❌ backups/latest.sql not found!"; exit 1; fi
 	@echo "🔄 Restoring latest database backup..."
-	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml exec backend bun run db:restore
+	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml --env-file .env exec -T postgres psql -U catalin_ene -d catalin_ene_dev < backups/latest.sql
+	@echo "✅ Database restored!"
 
 db-restore-name: detect-docker-compose
-	@if [ -z "$(NAME)" ]; then echo "Usage: make db-restore-name NAME=filename.sql"; exit 1; fi
+	@if [ -z "$(NAME)" ]; then echo "Usage: make db-restore-name NAME=backup_YYYYMMDD_HHMMSS.sql"; exit 1; fi
+	@if [ ! -f backups/$(NAME) ]; then echo "❌ backups/$(NAME) not found!"; exit 1; fi
 	@echo "🔄 Restoring database backup: $(NAME)..."
-	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml exec backend bun run db:restore $(NAME)
+	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml --env-file .env exec -T postgres psql -U catalin_ene -d catalin_ene_dev < backups/$(NAME)
+	@echo "✅ Database restored from $(NAME)!"
 
 db-generate-migration: detect-docker-compose
 	@echo "📝 Generating migration..."

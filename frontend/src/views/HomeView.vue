@@ -187,7 +187,7 @@
 
                             <div class="flex flex-wrap gap-3">
                                 <span v-for="tag in project.tags" :key="tag"
-                                    class="text-[10px] font-label font-bold text-secondary-fixed border border-secondary/20 px-2 py-1 rounded hover:bg-secondary/10 transition-colors">{{ tag }}</span>
+                                    class="text-[10px] font-label font-bold text-secondary-fixed border border-secondary/20 px-2 py-1 rounded hover:bg-secondary/10 transition-colors uppercase">{{ tag }}</span>
                             </div>
                         </div>
                     </div>
