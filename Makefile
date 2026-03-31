@@ -242,6 +242,12 @@ status-prod: detect-docker-compose
 logs-prod: detect-docker-compose
 	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod logs -f
 
+sync-uploads-prod: detect-docker-compose
+	@echo "📤 Syncing local uploads to production volume..."
+	@docker cp backend/uploads/. catalin-ene-backend-prod:/app/uploads/
+	@docker exec catalin-ene-backend-prod chown -R bun:bun /app/uploads
+	@echo "✅ Uploads synced!"
+
 restart-prod: detect-docker-compose check-docker-permissions
 	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod restart
 	@echo "✅ Restarted!"

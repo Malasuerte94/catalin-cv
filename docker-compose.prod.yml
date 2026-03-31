@@ -51,7 +51,7 @@ services:
       - IMGPROXY_CACHE_CONTROL_PASSTHROUGH=true
       - IMGPROXY_USE_LAST_MODIFIED=true
     volumes:
-      - ./backend/uploads:/uploads:ro
+      - uploads_data:/uploads:ro
     networks:
       - catalin-ene-network
       - webproxy
@@ -66,7 +66,7 @@ services:
       - "traefik.http.routers.ce-uploads.service=ce-imgproxy-svc"
       - "traefik.http.services.ce-imgproxy-svc.loadbalancer.server.port=8080"
       - "traefik.http.middlewares.ce-uploads-strip.stripprefix.prefixes=/uploads"
-      - "traefik.http.middlewares.ce-uploads-prefix.addprefix.prefix=/insecure/plain/local://"
+      - "traefik.http.middlewares.ce-uploads-prefix.addprefix.prefix=/insecure/plain/local:///"
       - "traefik.http.routers.ce-uploads.middlewares=ce-uploads-strip,ce-uploads-prefix"
 
   backend:
@@ -79,7 +79,7 @@ services:
       - NODE_ENV=production
       - TZ=${TZ:-UTC}
     volumes:
-      - ./backend/uploads:/app/uploads
+      - uploads_data:/app/uploads
       - invoices_data:/app/invoices
       - backups_data:/app/database_backups
       - ./logs:/app/logs
@@ -173,5 +173,8 @@ volumes:
     driver: local
 
 networks:
+  webproxy:
+    external: true
+tworks:
   webproxy:
     external: true
