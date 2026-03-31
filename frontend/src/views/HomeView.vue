@@ -133,20 +133,21 @@
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                    <div v-for="(project, index) in filteredProjects" :key="project.id"
+                    <div v-for="(project, index) in displayedProjects" :key="project.id"
                         class="group relative overflow-hidden rounded-2xl glass-panel shadow-[0_10px_40px_rgba(0,232,255,0.05)] reveal-on-scroll"
                         :ref="revealRef"
-                        :data-reveal-delay="index * 150"
+                        :data-reveal-delay="(index % 2) * 100"
                     >
                         
                         <!-- Project Cover / First Gallery Image -->
                         <div v-if="project.imageUrl" @click="openLightbox(project)" class="aspect-video overflow-hidden relative cursor-zoom-in">
                             <img :src="serveImage(project.imageUrl, 800, 450)" :alt="project.title"
+                                loading="lazy"
                                 class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
                             
                             <!-- Project Logo Overlay -->
                             <div v-if="project.logoUrl" class="absolute bottom-4 left-4 w-16 h-16 rounded-xl bg-background/40 backdrop-blur-xl border border-white/10 p-2 shadow-2xl overflow-hidden group-hover:scale-110 transition-transform">
-                                <img :src="serveImage(project.logoUrl, 100, 100)" class="w-full h-full object-contain" />
+                                <img :src="serveImage(project.logoUrl, 100, 100)" class="w-full h-full object-contain" loading="lazy" />
                             </div>
 
                             <!-- Tech Icon Overlay -->
@@ -167,7 +168,7 @@
                                     class="text-xl font-headline font-bold text-on-background group-hover:text-primary transition-colors truncate">
                                     {{ project.title }}</h4>
                                 <a v-if="project.projectUrl" :href="project.projectUrl" target="_blank"
-                                    class="flex-shrink-0 flex items-center gap-2 text-primary font-headline font-bold text-[10px] uppercase tracking-widest hover:brightness-110 transition-all">
+                                    class="flex-shrink-0 flex items-center gap-2 text-primary font-headline font-black font-bold text-[10px] uppercase tracking-widest hover:brightness-110 transition-all">
                                     <span>SEE WEBSITE</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="mb-0.5"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
                                 </a>
@@ -180,7 +181,7 @@
                                 <div v-for="(img, idx) in project.gallery" :key="idx" 
                                     @click="openLightbox(project)"
                                     class="min-w-[80px] h-12 rounded-lg overflow-hidden border border-white/5 opacity-60 hover:opacity-100 transition-all cursor-pointer hover:scale-105">
-                                    <img :src="serveImage(img, 160, 100)" class="w-full h-full object-cover" />
+                                    <img :src="serveImage(img, 160, 100)" class="w-full h-full object-cover" loading="lazy" />
                                 </div>
                             </div>
 
@@ -191,6 +192,9 @@
                         </div>
                     </div>
                 </div>
+                
+                <!-- Load More Trigger -->
+                <div ref="loadMoreTrigger" class="h-20 w-full opacity-0"></div>
             </section>
 
             <!-- Contact Section -->
@@ -390,12 +394,21 @@ const { revealRef } = useReveal();
 const currentSection = ref('home');
 const modalScrollY = ref(0);
 const projectFilter = ref<'all' | 'custom' | 'wordpress'>('all');
+const displayLimit = ref(8);
+const loadMoreTrigger = ref<HTMLElement | null>(null);
 
 const isLocked = useScrollLock(document.documentElement);
 
 const filteredProjects = computed(() => {
-  if (projectFilter.value === 'all') return dataStore.projects;
-  return dataStore.projects.filter(p => p.techType === projectFilter.value);
+  let filtered = dataStore.projects;
+  if (projectFilter.value !== 'all') {
+    filtered = dataStore.projects.filter(p => p.techType === projectFilter.value);
+  }
+  return filtered;
+});
+
+const displayedProjects = computed(() => {
+  return filteredProjects.value.slice(0, displayLimit.value);
 });
 
 const contactForm = ref({
@@ -467,6 +480,17 @@ onMounted(() => {
 
   window.addEventListener('scroll', updateActiveSection, { passive: true });
   updateActiveSection(); // Initial check
+
+  // Infinite scroll observer
+  const loadMoreObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && displayLimit.value < filteredProjects.value.length) {
+      displayLimit.value += 4;
+    }
+  }, { rootMargin: '400px' });
+
+  if (loadMoreTrigger.value) {
+    loadMoreObserver.observe(loadMoreTrigger.value);
+  }
 });
 
 const scrollTo = (selector: string) => {

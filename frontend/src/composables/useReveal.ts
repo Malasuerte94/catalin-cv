@@ -10,7 +10,7 @@ export interface RevealOptions {
 export function useReveal(options: RevealOptions = {}) {
   const {
     threshold = 0.1,
-    rootMargin = '0px 0px 100px 0px',
+    rootMargin = '0px 0px 300px 0px',
     once = true
   } = options;
 
