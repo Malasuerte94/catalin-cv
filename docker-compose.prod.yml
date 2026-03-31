@@ -175,6 +175,3 @@ volumes:
 networks:
   webproxy:
     external: true
-tworks:
-  webproxy:
-    external: true
