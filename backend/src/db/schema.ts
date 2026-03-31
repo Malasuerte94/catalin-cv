@@ -1,4 +1,4 @@
-import { pgTable, serial, text, varchar, timestamp, boolean, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, serial, text, varchar, timestamp, boolean, jsonb, integer } from "drizzle-orm/pg-core";
 
 export const admins = pgTable("admins", {
   id: serial("id").primaryKey(),
@@ -33,5 +33,18 @@ export const contactUrls = pgTable("contact_urls", {
   platform: varchar("platform", { length: 100 }).notNull(),
   url: text("url").notNull(),
   icon: varchar("icon", { length: 100 }),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const backgroundKeyframes = pgTable("background_keyframes", {
+  id: serial("id").primaryKey(),
+  scrollPercent: integer("scroll_percent").notNull(), // 0 to 100
+  posX: text("pos_x").notNull().default("0"),
+  posY: text("pos_y").notNull().default("0"),
+  posZ: text("pos_z").notNull().default("0"),
+  rotX: text("rot_x").notNull().default("0"),
+  rotY: text("rot_y").notNull().default("0"),
+  rotZ: text("rot_z").notNull().default("0"),
+  scale: text("scale").notNull().default("1"),
   createdAt: timestamp("created_at").defaultNow(),
 });

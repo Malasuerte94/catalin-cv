@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-background text-on-surface">
+  <div class="min-h-screen text-on-surface">
     <ThreeBackground />
     <router-view />
   </div>

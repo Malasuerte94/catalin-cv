@@ -30,6 +30,7 @@
 
     <!-- Tab Content -->
     <div class="space-y-8">
+      <!-- Projects Tab -->
       <div v-if="currentTab === 'projects'" class="space-y-6">
         <div class="flex justify-between items-center">
           <h2 class="font-headline text-2xl font-bold uppercase tracking-tight">Project Management</h2>
@@ -61,6 +62,7 @@
         </div>
       </div>
 
+      <!-- Experience Tab -->
       <div v-if="currentTab === 'experience'" class="space-y-6">
         <div class="flex justify-between items-center">
           <h2 class="font-headline text-2xl font-bold uppercase tracking-tight">Experience Management</h2>
@@ -87,6 +89,7 @@
         </div>
       </div>
 
+      <!-- Contact Tab -->
       <div v-if="currentTab === 'contact'" class="space-y-6">
         <div class="flex justify-between items-center">
           <h2 class="font-headline text-2xl font-bold uppercase tracking-tight">Contact Links</h2>
@@ -115,12 +118,54 @@
           </div>
         </div>
       </div>
+
+      <!-- 3D Config Tab -->
+      <div v-if="currentTab === 'config3d'" class="space-y-6">
+        <div class="flex justify-between items-center">
+          <h2 class="font-headline text-2xl font-bold uppercase tracking-tight">3D Keyboard Configurator</h2>
+          <button @click="openModal('config3d')" class="bg-primary px-6 py-2 rounded-xl text-on-primary font-headline font-black uppercase tracking-widest text-xs shadow-[0_0_15px_rgba(0,232,255,0.3)]">
+            Add Keyframe
+          </button>
+        </div>
+
+        <div class="glass-panel overflow-hidden rounded-2xl">
+          <table class="w-full text-left">
+            <thead class="bg-white/5 font-label text-[10px] uppercase tracking-widest text-slate-400">
+              <tr>
+                <th class="px-6 py-4">Scroll %</th>
+                <th class="px-6 py-4">Position (X,Y,Z)</th>
+                <th class="px-6 py-4">Rotation (X,Y,Z)</th>
+                <th class="px-6 py-4">Scale</th>
+                <th class="px-6 py-4 text-right">Actions</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-white/5">
+              <tr v-for="kf in dataStore.backgroundKeyframes" :key="kf.id" class="hover:bg-white/5 transition-colors">
+                <td class="px-6 py-4 font-headline font-bold text-primary">{{ kf.scrollPercent }}%</td>
+                <td class="px-6 py-4 text-xs text-slate-300">{{ kf.posX }}, {{ kf.posY }}, {{ kf.posZ }}</td>
+                <td class="px-6 py-4 text-xs text-slate-300">{{ kf.rotX }}, {{ kf.rotY }}, {{ kf.rotZ }}</td>
+                <td class="px-6 py-4 text-xs text-slate-300">{{ kf.scale }}</td>
+                <td class="px-6 py-4 text-right">
+                  <div class="flex justify-end gap-2">
+                    <button @click="editItem('config3d', kf)" class="text-primary p-2 hover:bg-primary/10 rounded-lg transition-all">
+                      <span class="material-symbols-outlined">edit</span>
+                    </button>
+                    <button @click="deleteItem('background-keyframes', kf.id)" class="text-error p-2 hover:bg-error/10 rounded-lg transition-all">
+                      <span class="material-symbols-outlined">delete</span>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <!-- Modals -->
     <div v-if="modal.show" class="fixed inset-0 z-[100] flex items-center justify-center p-6">
       <div class="absolute inset-0 bg-background/80 backdrop-blur-md" @click="modal.show = false"></div>
-      <div class="relative glass-panel w-full max-w-2xl p-8 rounded-3xl shadow-[0_0_80px_rgba(0,232,255,0.1)]">
+      <div class="relative glass-panel w-full max-w-2xl p-8 rounded-3xl shadow-[0_0_80px_rgba(0,232,255,0.1)] overflow-y-auto max-h-[90vh]">
         <h3 class="font-headline text-2xl font-black uppercase tracking-tight mb-8">
           {{ modal.editingId ? 'Update Record' : 'Create New Entry' }}
         </h3>
@@ -130,23 +175,23 @@
           <template v-if="modal.type === 'project'">
             <div class="col-span-2 space-y-2">
               <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Title</label>
-              <input v-model="form.project.title" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3" required />
+              <input v-model="form.project.title" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
             </div>
             <div class="col-span-2 space-y-2">
               <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Description</label>
-              <textarea v-model="form.project.description" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 h-24" required></textarea>
+              <textarea v-model="form.project.description" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 h-24 focus:outline-none focus:border-primary" required></textarea>
             </div>
             <div class="space-y-2">
               <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Image URL</label>
-              <input v-model="form.project.imageUrl" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3" />
+              <input v-model="form.project.imageUrl" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" />
             </div>
             <div class="space-y-2">
               <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Project URL</label>
-              <input v-model="form.project.projectUrl" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3" />
+              <input v-model="form.project.projectUrl" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" />
             </div>
             <div class="col-span-2 space-y-2">
               <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Tags (comma separated)</label>
-              <input v-model="form.tagsRaw" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3" />
+              <input v-model="form.tagsRaw" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" />
             </div>
           </template>
 
@@ -154,19 +199,19 @@
           <template v-if="modal.type === 'experience'">
             <div class="col-span-2 space-y-2">
               <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Role</label>
-              <input v-model="form.experience.role" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3" required />
+              <input v-model="form.experience.role" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
             </div>
             <div class="space-y-2">
               <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Company</label>
-              <input v-model="form.experience.company" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3" required />
+              <input v-model="form.experience.company" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
             </div>
             <div class="space-y-2">
               <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Period</label>
-              <input v-model="form.experience.period" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3" placeholder="2024 - PRESENT" required />
+              <input v-model="form.experience.period" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" placeholder="2024 - PRESENT" required />
             </div>
             <div class="col-span-2 space-y-2">
               <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Description</label>
-              <textarea v-model="form.experience.description" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 h-24" required></textarea>
+              <textarea v-model="form.experience.description" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 h-24 focus:outline-none focus:border-primary" required></textarea>
             </div>
             <div class="flex items-center gap-2">
               <input v-model="form.experience.isCurrent" type="checkbox" id="isCurrent" class="accent-primary" />
@@ -174,7 +219,7 @@
             </div>
             <div class="col-span-2 space-y-2">
               <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Tags (comma separated)</label>
-              <input v-model="form.tagsRaw" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3" />
+              <input v-model="form.tagsRaw" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" />
             </div>
           </template>
 
@@ -182,15 +227,51 @@
           <template v-if="modal.type === 'contact'">
             <div class="space-y-2">
               <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Platform</label>
-              <input v-model="form.contact.platform" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3" required />
+              <input v-model="form.contact.platform" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
             </div>
             <div class="space-y-2">
               <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Icon (Material Symbol)</label>
-              <input v-model="form.contact.icon" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3" placeholder="alternate_email" />
+              <input v-model="form.contact.icon" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" placeholder="alternate_email" />
             </div>
             <div class="col-span-2 space-y-2">
               <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">URL</label>
-              <input v-model="form.contact.url" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3" required />
+              <input v-model="form.contact.url" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
+            </div>
+          </template>
+
+          <!-- 3D Config Form -->
+          <template v-if="modal.type === 'config3d'">
+            <div class="col-span-2 space-y-2">
+              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Scroll Percentage (0-100)</label>
+              <input v-model.number="form.config3d.scrollPercent" type="number" min="0" max="100" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
+            </div>
+            <div class="space-y-2">
+              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Position X</label>
+              <input v-model="form.config3d.posX" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
+            </div>
+            <div class="space-y-2">
+              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Position Y</label>
+              <input v-model="form.config3d.posY" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
+            </div>
+            <div class="space-y-2">
+              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Position Z</label>
+              <input v-model="form.config3d.posZ" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
+            </div>
+            <div class="space-y-2">
+              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Rotation X (Radians)</label>
+              <input v-model="form.config3d.rotX" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
+            </div>
+            <div class="space-y-2">
+              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Rotation Y (Radians)</label>
+              <input v-model="form.config3d.rotY" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
+            </div>
+            <div class="space-y-2">
+              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Rotation Z (Radians)</label>
+              <input v-model="form.config3d.rotZ" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
+            </div>
+            <div class="col-span-2 space-y-2">
+              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Scale</label>
+              <input v-model="form.config3d.scale" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
             </div>
           </template>
 
@@ -221,6 +302,7 @@ const tabs = [
   { id: 'projects', label: 'Projects' },
   { id: 'experience', label: 'Experience' },
   { id: 'contact', label: 'Network' },
+  { id: 'config3d', label: '3D Config' },
 ];
 
 const modal = reactive({
@@ -234,6 +316,7 @@ const form = reactive({
   project: { title: '', description: '', imageUrl: '', projectUrl: '' },
   experience: { role: '', company: '', period: '', description: '', isCurrent: false },
   contact: { platform: '', url: '', icon: '' },
+  config3d: { scrollPercent: 0, posX: '0', posY: '0', posZ: '0', rotX: '0', rotY: '0', rotZ: '0', scale: '1' },
 });
 
 onMounted(() => {
@@ -257,6 +340,7 @@ const resetForm = () => {
   form.project = { title: '', description: '', imageUrl: '', projectUrl: '' };
   form.experience = { role: '', company: '', period: '', description: '', isCurrent: false };
   form.contact = { platform: '', url: '', icon: '' };
+  form.config3d = { scrollPercent: 0, posX: '0', posY: '0', posZ: '0', rotX: '0', rotY: '0', rotZ: '0', scale: '1' };
 };
 
 const editItem = (type: string, item: any) => {
@@ -272,6 +356,8 @@ const editItem = (type: string, item: any) => {
     form.tagsRaw = item.tags.join(', ');
   } else if (type === 'contact') {
     form.contact = { ...item };
+  } else if (type === 'config3d') {
+    form.config3d = { ...item };
   }
 };
 
@@ -302,6 +388,9 @@ const handleSubmit = async () => {
   } else if (modal.type === 'contact') {
     endpoint = 'contact-urls';
     payload = { ...form.contact };
+  } else if (modal.type === 'config3d') {
+    endpoint = 'background-keyframes';
+    payload = { ...form.config3d };
   }
 
   const url = modal.editingId ? `/api/admin/${endpoint}/${modal.editingId}` : `/api/admin/${endpoint}`;

@@ -23,3 +23,15 @@ export interface ContactUrl {
   url: string;
   icon?: string;
 }
+
+export interface BackgroundKeyframe {
+  id: number;
+  scrollPercent: number;
+  posX: string;
+  posY: string;
+  posZ: string;
+  rotX: string;
+  rotY: string;
+  rotZ: string;
+  scale: string;
+}

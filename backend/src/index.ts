@@ -2,8 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import { db } from './db';
-import { admins, projects, experience, contactUrls } from './db/schema';
-import { eq } from 'drizzle-orm';
+import { admins, projects, experience, contactUrls, backgroundKeyframes } from './db/schema';
+import { eq, asc } from 'drizzle-orm';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -59,6 +59,15 @@ app.get('/api/contact-urls', async (req, res) => {
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch contact URLs' });
+  }
+});
+
+app.get('/api/background-keyframes', async (req, res) => {
+  try {
+    const data = await db.select().from(backgroundKeyframes).orderBy(asc(backgroundKeyframes.scrollPercent));
+    res.json(data);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch keyframes' });
   }
 });
 
@@ -164,6 +173,33 @@ app.delete('/api/admin/contact-urls/:id', authenticateToken, async (req, res) =>
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: 'Failed to delete contact URL' });
+  }
+});
+
+app.post('/api/admin/background-keyframes', authenticateToken, async (req, res) => {
+  try {
+    const result = await db.insert(backgroundKeyframes).values(req.body).returning();
+    res.json(result[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create keyframe' });
+  }
+});
+
+app.put('/api/admin/background-keyframes/:id', authenticateToken, async (req, res) => {
+  try {
+    const result = await db.update(backgroundKeyframes).set(req.body).where(eq(backgroundKeyframes.id, parseInt(req.params.id))).returning();
+    res.json(result[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update keyframe' });
+  }
+});
+
+app.delete('/api/admin/background-keyframes/:id', authenticateToken, async (req, res) => {
+  try {
+    await db.delete(backgroundKeyframes).where(eq(backgroundKeyframes.id, parseInt(req.params.id)));
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete keyframe' });
   }
 });
 
