@@ -38,5 +38,20 @@ export const useDataStore = defineStore('data', {
         this.loading = false;
       }
     },
+    async sendContactMessage(name: string, email: string, message: string) {
+      try {
+        const res = await fetch(`${API_BASE_URL}/contact`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, message }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to send message');
+        return { success: true };
+      } catch (err: any) {
+        console.error(err);
+        return { success: false, error: err.message };
+      }
+    },
   },
 });

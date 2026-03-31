@@ -5,6 +5,7 @@ export interface Project {
   imageUrl?: string;
   logoUrl?: string;
   projectUrl?: string;
+  techType?: 'wordpress' | 'custom';
   gallery: string[];
   tags: string[];
 }
@@ -18,13 +19,15 @@ export interface Experience {
   description: string;
   isCurrent: boolean;
   tags: string[];
+  order?: number;
 }
 
 export interface ContactUrl {
   id: number;
   platform: string;
-  url: string;
-  icon?: string;
+  url?: string;
+  value?: string;
+  iconUrl?: string;
 }
 
 export interface BackgroundKeyframe {

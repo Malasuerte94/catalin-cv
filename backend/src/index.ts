@@ -3,6 +3,7 @@ import cors from 'cors';
 import jwt from 'jsonwebtoken';
 import multer from 'multer';
 import path from 'path';
+import nodemailer from 'nodemailer';
 import { db } from './db';
 import { admins, projects, experience, contactUrls, backgroundKeyframes } from './db/schema';
 import { eq, asc } from 'drizzle-orm';
@@ -10,6 +11,18 @@ import { eq, asc } from 'drizzle-orm';
 const app = express();
 const port = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
+const CONTACT_EMAIL = process.env.CONTACT_EMAIL;
+
+// Email Transporter (Example with placeholder, will use env if provided)
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || 'localhost',
+  port: parseInt(process.env.SMTP_PORT || '587'),
+  secure: process.env.SMTP_SECURE === 'true',
+  auth: process.env.SMTP_USER ? {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+  } : undefined,
+});
 
 // Configure Multer for file uploads
 const storage = multer.diskStorage({
@@ -24,15 +37,15 @@ const storage = multer.diskStorage({
 
 const upload = multer({ 
   storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
   fileFilter: (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|webp|gif|svg/;
+    const allowedTypes = /jpeg|jpg|png|webp|gif|svg|avif/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
-    const mimetype = allowedTypes.test(file.mimetype) || file.mimetype === 'image/svg+xml';
+    const mimetype = allowedTypes.test(file.mimetype) || file.mimetype === 'image/svg+xml' || file.mimetype === 'image/avif';
     if (extname && mimetype) {
       return cb(null, true);
     }
-    cb(new Error('Only images (including SVG) are allowed'));
+    cb(new Error('Only images (including SVG and AVIF) are allowed'));
   }
 });
 
@@ -68,6 +81,45 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', api: true, timestamp: new Date().toISOString() });
 });
 
+// Contact Form Endpoint
+app.post('/api/contact', async (req, res) => {
+  const { name, email, message } = req.body;
+
+  if (!name || !email || !message) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+
+  if (!CONTACT_EMAIL) {
+    console.error('CONTACT_EMAIL not configured in environment variables');
+    return res.status(500).json({ error: 'Contact email not configured' });
+  }
+
+  try {
+    await transporter.sendMail({
+      from: `"${name}" <${email}>`,
+      to: CONTACT_EMAIL,
+      subject: `New Contact Form Submission from ${name}`,
+      text: message,
+      html: `
+        <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+          <h2 style="color: #00e7fd;">New Contact Message</h2>
+          <p><strong>Name:</strong> ${name}</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p><strong>Message:</strong></p>
+          <div style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin-top: 10px;">
+            ${message.replace(/\n/g, '<br>')}
+          </div>
+        </div>
+      `,
+    });
+
+    res.json({ success: true, message: 'Message sent successfully' });
+  } catch (err) {
+    console.error('Failed to send email:', err);
+    res.status(500).json({ error: 'Failed to send message' });
+  }
+});
+
 // Serve uploaded files directly (or through imgproxy)
 app.use('/uploads', express.static('uploads'));
 
@@ -82,10 +134,26 @@ app.get('/api/projects', async (req, res) => {
 
 app.get('/api/experience', async (req, res) => {
   try {
-    const data = await db.select().from(experience);
+    const data = await db.select().from(experience).orderBy(asc(experience.order));
     res.json(data);
   } catch (err) {
     res.status(500).json({ error: 'Failed to fetch experience' });
+  }
+});
+
+app.post('/api/admin/experience/reorder', authenticateToken, async (req, res) => {
+  const { ids } = req.body; // Array of IDs in the new order
+  if (!Array.isArray(ids)) return res.status(400).json({ error: 'Invalid payload' });
+
+  try {
+    await db.transaction(async (tx) => {
+      for (let i = 0; i < ids.length; i++) {
+        await tx.update(experience).set({ order: i }).where(eq(experience.id, ids[i]));
+      }
+    });
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to reorder experience' });
   }
 });
 
@@ -171,7 +239,10 @@ app.delete('/api/admin/projects/:id', authenticateToken, async (req, res) => {
 
 app.post('/api/admin/experience', authenticateToken, async (req, res) => {
   try {
-    const result = await db.insert(experience).values(req.body).returning();
+    const allExp = await db.select().from(experience);
+    const maxOrder = allExp.reduce((max, item) => Math.max(max, item.order || 0), -1);
+    
+    const result = await db.insert(experience).values({ ...req.body, order: maxOrder + 1 }).returning();
     res.json(result[0]);
   } catch (err) {
     res.status(500).json({ error: 'Failed to create experience' });

@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS "background_keyframes" (
 	"id" serial PRIMARY KEY NOT NULL,
-	"scroll_percent" integer NOT NULL,
+	"section_id" varchar(100) NOT NULL,
 	"pos_x" text DEFAULT '0' NOT NULL,
 	"pos_y" text DEFAULT '0' NOT NULL,
 	"pos_z" text DEFAULT '0' NOT NULL,

@@ -1,0 +1,1 @@
+ALTER TABLE "experience" ADD COLUMN "order" integer DEFAULT 0;

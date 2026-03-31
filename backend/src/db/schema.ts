@@ -14,6 +14,7 @@ export const projects = pgTable("projects", {
   imageUrl: text("image_url"), // This will be the cover image (first from gallery)
   logoUrl: text("logo_url"),
   projectUrl: text("project_url"),
+  techType: varchar("tech_type", { length: 50 }).default('custom'), // 'wordpress' or 'custom'
   gallery: jsonb("gallery").$type<string[]>().default([]),
   tags: jsonb("tags").$type<string[]>().default([]),
   createdAt: timestamp("created_at").defaultNow(),
@@ -28,14 +29,16 @@ export const experience = pgTable("experience", {
   description: text("description").notNull(),
   isCurrent: boolean("is_current").default(false),
   tags: jsonb("tags").$type<string[]>().default([]),
+  order: integer("order").default(0),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const contactUrls = pgTable("contact_urls", {
   id: serial("id").primaryKey(),
   platform: varchar("platform", { length: 100 }).notNull(),
-  url: text("url").notNull(),
-  icon: varchar("icon", { length: 100 }),
+  url: text("url"), // Optional for cases like Discord
+  value: text("value"), // For when there is no URL (e.g. Discord username)
+  iconUrl: text("icon_url"), // For uploaded icons
   createdAt: timestamp("created_at").defaultNow(),
 });
 

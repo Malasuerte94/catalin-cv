@@ -70,33 +70,47 @@
       <!-- Experience Tab -->
       <div v-if="currentTab === 'experience'" class="space-y-6">
         <div class="flex justify-between items-center">
-          <h2 class="font-headline text-2xl font-bold uppercase tracking-tight">Experience Management</h2>
+          <div class="space-y-1">
+            <h2 class="font-headline text-2xl font-bold uppercase tracking-tight">Experience Management</h2>
+            <p class="text-[10px] text-slate-500 font-label uppercase tracking-widest">Drag items to reorder them on the main site</p>
+          </div>
           <button @click="openModal('experience')" class="bg-primary px-6 py-2 rounded-xl text-on-primary font-headline font-black uppercase tracking-widest text-xs shadow-[0_0_15px_rgba(0,232,255,0.3)]">
             Add Experience
           </button>
         </div>
 
-        <div class="space-y-4">
-          <div v-for="item in dataStore.experience" :key="item.id" class="glass-panel p-6 rounded-2xl flex justify-between items-center">
-            <div class="flex items-center gap-4">
-              <div v-if="item.companyLogo" class="w-12 h-12 rounded-lg bg-white/5 flex-shrink-0 overflow-hidden border border-white/10">
-                <img :src="serveImage(item.companyLogo, 80, 80)" class="w-full h-full object-contain" />
+        <draggable 
+          v-model="dataStore.experience" 
+          item-key="id"
+          class="space-y-4"
+          handle=".drag-handle"
+          @end="handleReorder"
+        >
+          <template #item="{ element: item }">
+            <div class="glass-panel p-6 rounded-2xl flex justify-between items-center group">
+              <div class="flex items-center gap-4">
+                <div class="drag-handle cursor-grab active:cursor-grabbing text-slate-600 hover:text-primary transition-colors p-2">
+                  <span class="material-symbols-outlined">drag_indicator</span>
+                </div>
+                <div v-if="item.companyLogo" class="w-12 h-12 rounded-lg bg-white/5 flex-shrink-0 overflow-hidden border border-white/10">
+                  <img :src="serveImage(item.companyLogo, 80, 80)" class="w-full h-full object-contain" />
+                </div>
+                <div>
+                  <h4 class="font-headline font-bold text-lg">{{ item.role }}</h4>
+                  <p class="text-secondary font-label text-xs uppercase tracking-widest font-bold">{{ item.company }} // {{ item.period }}</p>
+                </div>
               </div>
-              <div>
-                <h4 class="font-headline font-bold text-lg">{{ item.role }}</h4>
-                <p class="text-secondary font-label text-xs uppercase tracking-widest font-bold">{{ item.company }} // {{ item.period }}</p>
+              <div class="flex gap-2">
+                <button @click="editItem('experience', item)" class="text-primary p-2 hover:bg-primary/10 rounded-lg transition-all">
+                  <span class="material-symbols-outlined">edit</span>
+                </button>
+                <button @click="deleteItem('experience', item.id)" class="text-error p-2 hover:bg-error/10 rounded-lg transition-all">
+                  <span class="material-symbols-outlined">delete</span>
+                </button>
               </div>
             </div>
-            <div class="flex gap-2">
-              <button @click="editItem('experience', item)" class="text-primary p-2 hover:bg-primary/10 rounded-lg transition-all">
-                <span class="material-symbols-outlined">edit</span>
-              </button>
-              <button @click="deleteItem('experience', item.id)" class="text-error p-2 hover:bg-error/10 rounded-lg transition-all">
-                <span class="material-symbols-outlined">delete</span>
-              </button>
-            </div>
-          </div>
-        </div>
+          </template>
+        </draggable>
       </div>
 
       <!-- Network Tab -->
@@ -111,10 +125,13 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div v-for="link in dataStore.contactUrls" :key="link.id" class="glass-panel p-6 rounded-2xl flex justify-between items-center">
             <div class="flex items-center gap-4 overflow-hidden">
-              <span class="material-symbols-outlined text-primary flex-shrink-0">{{ link.icon || 'link' }}</span>
+              <div v-if="link.iconUrl" class="w-10 h-10 rounded-lg bg-white/5 flex-shrink-0 overflow-hidden border border-white/10 flex items-center justify-center p-1">
+                <img :src="serveImage(link.iconUrl, 80, 80)" class="w-full h-full object-contain" />
+              </div>
+              <span v-else class="material-symbols-outlined text-primary flex-shrink-0">link</span>
               <div class="min-w-0">
                 <h4 class="font-headline font-bold truncate">{{ link.platform }}</h4>
-                <p class="text-on-surface-variant text-xs truncate">{{ link.url }}</p>
+                <p class="text-on-surface-variant text-xs truncate">{{ link.value || link.url }}</p>
               </div>
             </div>
             <div class="flex gap-2 flex-shrink-0">
@@ -190,6 +207,26 @@
               <input v-model="form.project.title" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
             </div>
             
+            <div class="col-span-2 space-y-2">
+              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Technology Stack</label>
+              <div class="flex gap-4">
+                <label class="flex items-center gap-2 cursor-pointer group">
+                  <input type="radio" v-model="form.project.techType" value="custom" class="hidden" />
+                  <div class="w-5 h-5 rounded-full border-2 border-primary/20 flex items-center justify-center transition-all group-hover:border-primary/40" :class="{ 'border-primary bg-primary/20': form.project.techType === 'custom' }">
+                    <div v-if="form.project.techType === 'custom'" class="w-2 h-2 rounded-full bg-primary"></div>
+                  </div>
+                  <span class="font-label text-xs uppercase tracking-widest" :class="{ 'text-primary': form.project.techType === 'custom' }">Custom Code (&lt;/&gt;)</span>
+                </label>
+                <label class="flex items-center gap-2 cursor-pointer group">
+                  <input type="radio" v-model="form.project.techType" value="wordpress" class="hidden" />
+                  <div class="w-5 h-5 rounded-full border-2 border-primary/20 flex items-center justify-center transition-all group-hover:border-primary/40" :class="{ 'border-primary bg-primary/20': form.project.techType === 'wordpress' }">
+                    <div v-if="form.project.techType === 'wordpress'" class="w-2 h-2 rounded-full bg-primary"></div>
+                  </div>
+                  <span class="font-label text-xs uppercase tracking-widest" :class="{ 'text-primary': form.project.techType === 'wordpress' }">WordPress (WP)</span>
+                </label>
+              </div>
+            </div>
+
             <div class="col-span-2">
               <RichTextEditor v-model="form.project.description" label="Description" />
             </div>
@@ -243,17 +280,21 @@
 
           <!-- Contact Form -->
           <template v-if="modal.type === 'contact'">
-            <div class="space-y-2">
-              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Platform</label>
-              <input v-model="form.contact.platform" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
-            </div>
-            <div class="space-y-2">
-              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Icon (Material Symbol)</label>
-              <input v-model="form.contact.icon" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" placeholder="alternate_email" />
-            </div>
             <div class="col-span-2 space-y-2">
-              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">URL</label>
-              <input v-model="form.contact.url" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
+              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Platform / Title</label>
+              <input v-model="form.contact.platform" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" placeholder="e.g. Discord" required />
+            </div>
+            
+            <ImageUpload v-model="form.contact.iconUrl" label="Custom Icon" class="col-span-2" />
+
+            <div class="col-span-2 space-y-2">
+              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Platform Value (e.g. Username / ID)</label>
+              <input v-model="form.contact.value" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" placeholder="e.g. User#0000" />
+            </div>
+
+            <div class="col-span-2 space-y-2">
+              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">URL (Optional)</label>
+              <input v-model="form.contact.url" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" placeholder="https://..." />
             </div>
           </template>
 
@@ -315,6 +356,7 @@ import { ref, reactive, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import { useDataStore } from '../stores/data';
+import draggable from 'vuedraggable';
 import ImageUpload from '../components/ImageUpload.vue';
 import GalleryUpload from '../components/GalleryUpload.vue';
 import RichTextEditor from '../components/RichTextEditor.vue';
@@ -322,6 +364,22 @@ import RichTextEditor from '../components/RichTextEditor.vue';
 const router = useRouter();
 const authStore = useAuthStore();
 const dataStore = useDataStore();
+
+const handleReorder = async () => {
+  const ids = dataStore.experience.map(item => item.id);
+  try {
+    await fetch('/api/admin/experience/reorder', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${authStore.token}`
+      },
+      body: JSON.stringify({ ids })
+    });
+  } catch (err) {
+    console.error('Failed to save order:', err);
+  }
+};
 
 const SECTION_ORDER = ['home', 'experience', 'portfolio', 'contact'];
 
@@ -347,9 +405,9 @@ const modal = reactive({
 
 const form = reactive({
   tagsRaw: '',
-  project: { title: '', description: '', imageUrl: '', logoUrl: '', projectUrl: '', gallery: [] as string[] },
+  project: { title: '', description: '', imageUrl: '', logoUrl: '', projectUrl: '', techType: 'custom' as 'custom' | 'wordpress', gallery: [] as string[] },
   experience: { role: '', company: '', companyLogo: '', period: '', description: '', isCurrent: false },
-  contact: { platform: '', url: '', icon: '' },
+  contact: { platform: '', url: '', value: '', iconUrl: '' },
   config3d: { sectionId: 'home', posX: '0', posY: '0', posZ: '0', rotX: '0', rotY: '0', rotZ: '0', scale: '1' },
 });
 
@@ -371,9 +429,9 @@ const openModal = (type: string) => {
 
 const resetForm = () => {
   form.tagsRaw = '';
-  form.project = { title: '', description: '', imageUrl: '', logoUrl: '', projectUrl: '', gallery: [] };
+  form.project = { title: '', description: '', imageUrl: '', logoUrl: '', projectUrl: '', techType: 'custom', gallery: [] };
   form.experience = { role: '', company: '', companyLogo: '', period: '', description: '', isCurrent: false };
-  form.contact = { platform: '', url: '', icon: '' };
+  form.contact = { platform: '', url: '', value: '', iconUrl: '' };
   form.config3d = { sectionId: 'home', posX: '0', posY: '0', posZ: '0', rotX: '0', rotY: '0', rotZ: '0', scale: '1' };
 };
 
@@ -389,6 +447,7 @@ const editItem = (type: string, item: any) => {
       imageUrl: item.imageUrl, 
       logoUrl: item.logoUrl || '', 
       projectUrl: item.projectUrl || '', 
+      techType: item.techType || 'custom',
       gallery: item.gallery || [] 
     };
     form.tagsRaw = (item.tags || []).join(', ');
@@ -403,7 +462,12 @@ const editItem = (type: string, item: any) => {
     };
     form.tagsRaw = (item.tags || []).join(', ');
   } else if (type === 'contact') {
-    form.contact = { ...item };
+    form.contact = { 
+      platform: item.platform, 
+      url: item.url || '', 
+      value: item.value || '', 
+      iconUrl: item.iconUrl || '' 
+    };
   } else if (type === 'config3d') {
     form.config3d = { ...item };
   }
