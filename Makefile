@@ -140,14 +140,14 @@ db-backup: detect-docker-compose
 db-restore: detect-docker-compose
 	@if [ ! -f backups/latest.sql ]; then echo "❌ backups/latest.sql not found!"; exit 1; fi
 	@echo "🔄 Restoring latest database backup..."
-	@cat backups/latest.sql | $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml --env-file .env exec -i postgres psql -U catalin_ene -d catalin_ene_dev
+	@cat backups/latest.sql | $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml --env-file .env exec -T postgres psql -U catalin_ene -d catalin_ene_dev
 	@echo "✅ Database restored!"
 
 db-restore-name: detect-docker-compose
 	@if [ -z "$(NAME)" ]; then echo "Usage: make db-restore-name NAME=backup_YYYYMMDD_HHMMSS.sql"; exit 1; fi
 	@if [ ! -f backups/$(NAME) ]; then echo "❌ backups/$(NAME) not found!"; exit 1; fi
 	@echo "🔄 Restoring database backup: $(NAME)..."
-	@cat backups/$(NAME) | $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml --env-file .env exec -i postgres psql -U catalin_ene -d catalin_ene_dev
+	@cat backups/$(NAME) | $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml --env-file .env exec -T postgres psql -U catalin_ene -d catalin_ene_dev
 	@echo "✅ Database restored from $(NAME)!"
 
 # Production DB Commands
@@ -165,7 +165,7 @@ db-restore-prod: detect-docker-compose
 	@if [ ! -f backups/prod/latest_prod.sql ]; then echo "❌ backups/prod/latest_prod.sql not found!"; exit 1; fi
 	@echo "🔄 Restoring latest production database backup..."
 	@export $$(grep -v '^#' .env.prod | xargs) && \
-	cat backups/prod/latest_prod.sql | $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod exec -i postgres psql -U $$DB_USER -d $$DB_NAME
+	cat backups/prod/latest_prod.sql | $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod exec -T postgres psql -U $$DB_USER -d $$DB_NAME
 	@echo "✅ Production database restored!"
 
 db-restore-name-prod: detect-docker-compose
@@ -174,7 +174,7 @@ db-restore-name-prod: detect-docker-compose
 	@if [ ! -f backups/prod/$(NAME) ]; then echo "❌ backups/prod/$(NAME) not found!"; exit 1; fi
 	@echo "🔄 Restoring production database backup: $(NAME)..."
 	@export $$(grep -v '^#' .env.prod | xargs) && \
-	cat backups/prod/$(NAME) | $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod exec -i postgres psql -U $$DB_USER -d $$DB_NAME
+	cat backups/prod/$(NAME) | $(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.prod.yml --env-file .env.prod exec -T postgres psql -U $$DB_USER -d $$DB_NAME
 	@echo "✅ Production database restored from $(NAME)!"
 
 db-generate-migration: detect-docker-compose
