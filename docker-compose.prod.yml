@@ -50,6 +50,10 @@ services:
       - IMGPROXY_MAX_SRC_FILE_SIZE=50000000
       - IMGPROXY_CACHE_CONTROL_PASSTHROUGH=true
       - IMGPROXY_USE_LAST_MODIFIED=true
+      - IMGPROXY_READ_TIMEOUT=30
+      - IMGPROXY_WRITE_TIMEOUT=30
+      - IMGPROXY_DOWNLOAD_TIMEOUT=30
+      - IMGPROXY_CONCURRENCY=10
     volumes:
       - uploads_data:/uploads:ro
     networks:
@@ -66,7 +70,7 @@ services:
       - "traefik.http.routers.ce-uploads.service=ce-imgproxy-svc"
       - "traefik.http.services.ce-imgproxy-svc.loadbalancer.server.port=8080"
       - "traefik.http.middlewares.ce-uploads-strip.stripprefix.prefixes=/uploads"
-      - "traefik.http.middlewares.ce-uploads-prefix.addprefix.prefix=/insecure/plain/local:///"
+      - "traefik.http.middlewares.ce-uploads-prefix.addprefix.prefix=/insecure/plain/local://"
       - "traefik.http.routers.ce-uploads.middlewares=ce-uploads-strip,ce-uploads-prefix"
 
   backend:
