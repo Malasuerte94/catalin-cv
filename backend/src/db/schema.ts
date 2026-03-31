@@ -11,8 +11,10 @@ export const projects = pgTable("projects", {
   id: serial("id").primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description").notNull(),
-  imageUrl: text("image_url"),
+  imageUrl: text("image_url"), // This will be the cover image (first from gallery)
+  logoUrl: text("logo_url"),
   projectUrl: text("project_url"),
+  gallery: jsonb("gallery").$type<string[]>().default([]),
   tags: jsonb("tags").$type<string[]>().default([]),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -21,6 +23,7 @@ export const experience = pgTable("experience", {
   id: serial("id").primaryKey(),
   role: varchar("role", { length: 255 }).notNull(),
   company: varchar("company", { length: 255 }).notNull(),
+  companyLogo: text("company_logo"),
   period: varchar("period", { length: 100 }).notNull(),
   description: text("description").notNull(),
   isCurrent: boolean("is_current").default(false),

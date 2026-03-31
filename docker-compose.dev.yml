@@ -46,6 +46,8 @@ services:
       - ./backend/invoices:/app/invoices
     ports:
       - "3000:3000"
+    networks:
+      - catalin-ene-network
     stdin_open: true
     tty: true
     restart: unless-stopped
@@ -72,6 +74,8 @@ services:
       - frontend_node_modules:/app/node_modules
     ports:
       - "3010:3010"
+    networks:
+      - catalin-ene-network
     stdin_open: true
     tty: true
     restart: unless-stopped
@@ -81,6 +85,8 @@ services:
   redis:
     ports:
       - "6379:6379"
+    networks:
+      - catalin-ene-network
 
   postgres:
     ports:
@@ -91,16 +97,34 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD:-catalin_ene_pass}
     volumes:
       - postgres_dev_data:/var/lib/postgresql/data
+    networks:
+      - catalin-ene-network
 
   portainer:
     ports:
       - "9000:9000"
+    networks:
+      - catalin-ene-network
 
   imgproxy:
+    image: darthsim/imgproxy:v3.24
+    container_name: catalin-ene-imgproxy-dev
+    environment:
+      - IMGPROXY_LOCAL_FILESYSTEM_ROOT=/uploads
+      - IMGPROXY_USE_ETAG=true
+      - IMGPROXY_ENABLE_WEBP_DETECTION=true
+      - IMGPROXY_ENFORCE_WEBP=true
+      - IMGPROXY_QUALITY=85
     volumes:
       - ./backend/uploads:/uploads:ro
     ports:
       - "8081:8080"
+    networks:
+      - catalin-ene-network
+
+networks:
+  catalin-ene-network:
+    external: true
 
 volumes:
   postgres_dev_data:

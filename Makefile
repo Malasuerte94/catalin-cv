@@ -185,7 +185,7 @@ clean-modules: detect-docker-compose
 
 db-push: detect-docker-compose
 	@echo "📝 Pushing schema changes to database..."
-	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml exec backend bunx drizzle-kit push --auto
+	@$(DOCKER_COMPOSE) -f docker-compose.yml -f docker-compose.dev.yml exec backend bunx drizzle-kit push
 	@echo "✅ Schema pushed!"
 
 # Production

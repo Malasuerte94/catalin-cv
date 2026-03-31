@@ -19,6 +19,7 @@ let shadowPlane: THREE.Mesh;
 let animationFrameId: number;
 
 const lerp = (start: number, end: number, t: number) => start * (1 - t) + end * t;
+const degToRad = (deg: number) => deg * (Math.PI / 180);
 
 const init = () => {
   if (!container.value) return;
@@ -132,9 +133,9 @@ const init = () => {
         model.position.y = lerp(parseFloat(startK.posY), parseFloat(endK.posY), t);
         model.position.z = lerp(parseFloat(startK.posZ), parseFloat(endK.posZ), t);
         
-        model.rotation.x = lerp(parseFloat(startK.rotX), parseFloat(endK.rotX), t);
-        model.rotation.y = lerp(parseFloat(startK.rotY), parseFloat(endK.rotY), t);
-        model.rotation.z = lerp(parseFloat(startK.rotZ), parseFloat(endK.rotZ), t);
+        model.rotation.x = degToRad(lerp(parseFloat(startK.rotX), parseFloat(endK.rotX), t));
+        model.rotation.y = degToRad(lerp(parseFloat(startK.rotY), parseFloat(endK.rotY), t));
+        model.rotation.z = degToRad(lerp(parseFloat(startK.rotZ), parseFloat(endK.rotZ), t));
         
         const s = lerp(parseFloat(startK.scale), parseFloat(endK.scale), t);
         model.scale.set(s, s, s);

@@ -3,7 +3,9 @@ export interface Project {
   title: string;
   description: string;
   imageUrl?: string;
+  logoUrl?: string;
   projectUrl?: string;
+  gallery: string[];
   tags: string[];
 }
 
@@ -11,6 +13,7 @@ export interface Experience {
   id: number;
   role: string;
   company: string;
+  companyLogo?: string;
   period: string;
   description: string;
   isCurrent: boolean;

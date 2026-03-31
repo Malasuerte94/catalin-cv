@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen pt-12 px-6 lg:px-24 max-w-7xl mx-auto pb-24">
+  <div class="min-h-screen pt-12 px-6 lg:px-24 max-w-7xl mx-auto pb-24 text-on-background">
     <div class="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
       <h1 class="font-headline text-4xl font-black uppercase tracking-tighter">Admin Dashboard</h1>
       <div class="flex gap-4">
@@ -41,16 +41,21 @@
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div v-for="project in dataStore.projects" :key="project.id" class="glass-panel p-6 rounded-2xl flex justify-between items-start">
-            <div>
-              <h4 class="font-headline font-bold text-lg mb-1">{{ project.title }}</h4>
-              <p class="text-on-surface-variant text-sm line-clamp-2 mb-4">{{ project.description }}</p>
-              <div class="flex gap-2 flex-wrap">
-                <span v-for="tag in project.tags" :key="tag" class="text-[10px] font-label font-bold text-secondary-fixed border border-secondary/20 px-2 py-1 rounded">
-                  {{ tag }}
-                </span>
+            <div class="flex gap-4 overflow-hidden">
+              <div v-if="project.logoUrl || project.imageUrl" class="w-16 h-16 rounded-xl bg-white/5 flex-shrink-0 overflow-hidden border border-white/10">
+                <img :src="serveImage(project.logoUrl || project.imageUrl, 100, 100)" class="w-full h-full object-contain" />
+              </div>
+              <div class="min-w-0">
+                <h4 class="font-headline font-bold text-lg mb-1 truncate">{{ project.title }}</h4>
+                <div class="text-on-surface-variant text-sm line-clamp-2 mb-4 rich-text-content opacity-60" v-html="project.description"></div>
+                <div class="flex gap-2 flex-wrap">
+                  <span v-for="tag in project.tags" :key="tag" class="text-[10px] font-label font-bold text-secondary-fixed border border-secondary/20 px-2 py-1 rounded">
+                    {{ tag }}
+                  </span>
+                </div>
               </div>
             </div>
-            <div class="flex gap-2">
+            <div class="flex gap-2 flex-shrink-0 ml-4">
               <button @click="editItem('project', project)" class="text-primary p-2 hover:bg-primary/10 rounded-lg transition-all">
                 <span class="material-symbols-outlined">edit</span>
               </button>
@@ -73,9 +78,14 @@
 
         <div class="space-y-4">
           <div v-for="item in dataStore.experience" :key="item.id" class="glass-panel p-6 rounded-2xl flex justify-between items-center">
-            <div>
-              <h4 class="font-headline font-bold text-lg">{{ item.role }}</h4>
-              <p class="text-secondary font-label text-xs uppercase tracking-widest font-bold">{{ item.company }} // {{ item.period }}</p>
+            <div class="flex items-center gap-4">
+              <div v-if="item.companyLogo" class="w-12 h-12 rounded-lg bg-white/5 flex-shrink-0 overflow-hidden border border-white/10">
+                <img :src="serveImage(item.companyLogo, 80, 80)" class="w-full h-full object-contain" />
+              </div>
+              <div>
+                <h4 class="font-headline font-bold text-lg">{{ item.role }}</h4>
+                <p class="text-secondary font-label text-xs uppercase tracking-widest font-bold">{{ item.company }} // {{ item.period }}</p>
+              </div>
             </div>
             <div class="flex gap-2">
               <button @click="editItem('experience', item)" class="text-primary p-2 hover:bg-primary/10 rounded-lg transition-all">
@@ -89,7 +99,7 @@
         </div>
       </div>
 
-      <!-- Contact Tab -->
+      <!-- Network Tab -->
       <div v-if="currentTab === 'contact'" class="space-y-6">
         <div class="flex justify-between items-center">
           <h2 class="font-headline text-2xl font-bold uppercase tracking-tight">Contact Links</h2>
@@ -100,14 +110,14 @@
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div v-for="link in dataStore.contactUrls" :key="link.id" class="glass-panel p-6 rounded-2xl flex justify-between items-center">
-            <div class="flex items-center gap-4">
-              <span class="material-symbols-outlined text-primary">{{ link.icon || 'link' }}</span>
-              <div>
-                <h4 class="font-headline font-bold">{{ link.platform }}</h4>
-                <p class="text-on-surface-variant text-xs truncate max-w-[150px]">{{ link.url }}</p>
+            <div class="flex items-center gap-4 overflow-hidden">
+              <span class="material-symbols-outlined text-primary flex-shrink-0">{{ link.icon || 'link' }}</span>
+              <div class="min-w-0">
+                <h4 class="font-headline font-bold truncate">{{ link.platform }}</h4>
+                <p class="text-on-surface-variant text-xs truncate">{{ link.url }}</p>
               </div>
             </div>
-            <div class="flex gap-2">
+            <div class="flex gap-2 flex-shrink-0">
               <button @click="editItem('contact', link)" class="text-primary p-2 hover:bg-primary/10 rounded-lg transition-all">
                 <span class="material-symbols-outlined">edit</span>
               </button>
@@ -129,35 +139,37 @@
         </div>
 
         <div class="glass-panel overflow-hidden rounded-2xl">
-          <table class="w-full text-left">
-            <thead class="bg-white/5 font-label text-[10px] uppercase tracking-widest text-slate-400">
-              <tr>
-                <th class="px-6 py-4">Scroll %</th>
-                <th class="px-6 py-4">Position (X,Y,Z)</th>
-                <th class="px-6 py-4">Rotation (X,Y,Z)</th>
-                <th class="px-6 py-4">Scale</th>
-                <th class="px-6 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-white/5">
-              <tr v-for="kf in dataStore.backgroundKeyframes" :key="kf.id" class="hover:bg-white/5 transition-colors">
-                <td class="px-6 py-4 font-headline font-bold text-primary">{{ kf.scrollPercent }}%</td>
-                <td class="px-6 py-4 text-xs text-slate-300">{{ kf.posX }}, {{ kf.posY }}, {{ kf.posZ }}</td>
-                <td class="px-6 py-4 text-xs text-slate-300">{{ kf.rotX }}, {{ kf.rotY }}, {{ kf.rotZ }}</td>
-                <td class="px-6 py-4 text-xs text-slate-300">{{ kf.scale }}</td>
-                <td class="px-6 py-4 text-right">
-                  <div class="flex justify-end gap-2">
-                    <button @click="editItem('config3d', kf)" class="text-primary p-2 hover:bg-primary/10 rounded-lg transition-all">
-                      <span class="material-symbols-outlined">edit</span>
-                    </button>
-                    <button @click="deleteItem('background-keyframes', kf.id)" class="text-error p-2 hover:bg-error/10 rounded-lg transition-all">
-                      <span class="material-symbols-outlined">delete</span>
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left">
+              <thead class="bg-white/5 font-label text-[10px] uppercase tracking-widest text-slate-400">
+                <tr>
+                  <th class="px-6 py-4">Scroll %</th>
+                  <th class="px-6 py-4">Position (X,Y,Z)</th>
+                  <th class="px-6 py-4">Rotation (X,Y,Z)</th>
+                  <th class="px-6 py-4">Scale</th>
+                  <th class="px-6 py-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/5">
+                <tr v-for="kf in dataStore.backgroundKeyframes" :key="kf.id" class="hover:bg-white/5 transition-colors">
+                  <td class="px-6 py-4 font-headline font-bold text-primary">{{ kf.scrollPercent }}%</td>
+                  <td class="px-6 py-4 text-xs text-slate-300">{{ kf.posX }}, {{ kf.posY }}, {{ kf.posZ }}</td>
+                  <td class="px-6 py-4 text-xs text-slate-300">{{ kf.rotX }}, {{ kf.rotY }}, {{ kf.rotZ }}</td>
+                  <td class="px-6 py-4 text-xs text-slate-300">{{ kf.scale }}</td>
+                  <td class="px-6 py-4 text-right">
+                    <div class="flex justify-end gap-2">
+                      <button @click="editItem('config3d', kf)" class="text-primary p-2 hover:bg-primary/10 rounded-lg transition-all">
+                        <span class="material-symbols-outlined">edit</span>
+                      </button>
+                      <button @click="deleteItem('background-keyframes', kf.id)" class="text-error p-2 hover:bg-error/10 rounded-lg transition-all">
+                        <span class="material-symbols-outlined">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
@@ -177,18 +189,21 @@
               <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Title</label>
               <input v-model="form.project.title" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
             </div>
-            <div class="col-span-2 space-y-2">
-              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Description</label>
-              <textarea v-model="form.project.description" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 h-24 focus:outline-none focus:border-primary" required></textarea>
+            
+            <div class="col-span-2">
+              <RichTextEditor v-model="form.project.description" label="Description" />
             </div>
-            <div class="space-y-2">
-              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Image URL</label>
-              <input v-model="form.project.imageUrl" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" />
-            </div>
+            
+            <ImageUpload v-model="form.project.logoUrl" label="Project Logo" />
             <div class="space-y-2">
               <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Project URL</label>
               <input v-model="form.project.projectUrl" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" />
             </div>
+
+            <div class="col-span-2">
+              <GalleryUpload v-model="form.project.gallery" />
+            </div>
+
             <div class="col-span-2 space-y-2">
               <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Tags (comma separated)</label>
               <input v-model="form.tagsRaw" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" />
@@ -209,14 +224,17 @@
               <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Period</label>
               <input v-model="form.experience.period" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" placeholder="2024 - PRESENT" required />
             </div>
-            <div class="col-span-2 space-y-2">
-              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Description</label>
-              <textarea v-model="form.experience.description" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 h-24 focus:outline-none focus:border-primary" required></textarea>
-            </div>
-            <div class="flex items-center gap-2">
-              <input v-model="form.experience.isCurrent" type="checkbox" id="isCurrent" class="accent-primary" />
+
+            <ImageUpload v-model="form.experience.companyLogo" label="Company Logo" />
+            <div class="flex items-center gap-2 pt-8">
+              <input v-model="form.experience.isCurrent" type="checkbox" id="isCurrent" class="accent-primary w-4 h-4" />
               <label for="isCurrent" class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Current Position</label>
             </div>
+
+            <div class="col-span-2">
+              <RichTextEditor v-model="form.experience.description" label="Description" />
+            </div>
+
             <div class="col-span-2 space-y-2">
               <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Tags (comma separated)</label>
               <input v-model="form.tagsRaw" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" />
@@ -258,15 +276,15 @@
               <input v-model="form.config3d.posZ" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
             </div>
             <div class="space-y-2">
-              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Rotation X (Radians)</label>
+              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Rotation X (Degrees)</label>
               <input v-model="form.config3d.rotX" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
             </div>
             <div class="space-y-2">
-              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Rotation Y (Radians)</label>
+              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Rotation Y (Degrees)</label>
               <input v-model="form.config3d.rotY" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
             </div>
             <div class="space-y-2">
-              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Rotation Z (Radians)</label>
+              <label class="font-label text-[10px] uppercase tracking-[0.2em] text-on-surface-variant">Rotation Z (Degrees)</label>
               <input v-model="form.config3d.rotZ" class="w-full bg-[#1A1A23] border border-primary/20 rounded-xl px-4 py-3 focus:outline-none focus:border-primary" required />
             </div>
             <div class="col-span-2 space-y-2">
@@ -292,6 +310,9 @@ import { ref, reactive, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
 import { useDataStore } from '../stores/data';
+import ImageUpload from '../components/ImageUpload.vue';
+import GalleryUpload from '../components/GalleryUpload.vue';
+import RichTextEditor from '../components/RichTextEditor.vue';
 
 const router = useRouter();
 const authStore = useAuthStore();
@@ -313,8 +334,8 @@ const modal = reactive({
 
 const form = reactive({
   tagsRaw: '',
-  project: { title: '', description: '', imageUrl: '', projectUrl: '' },
-  experience: { role: '', company: '', period: '', description: '', isCurrent: false },
+  project: { title: '', description: '', imageUrl: '', logoUrl: '', projectUrl: '', gallery: [] as string[] },
+  experience: { role: '', company: '', companyLogo: '', period: '', description: '', isCurrent: false },
   contact: { platform: '', url: '', icon: '' },
   config3d: { scrollPercent: 0, posX: '0', posY: '0', posZ: '0', rotX: '0', rotY: '0', rotZ: '0', scale: '1' },
 });
@@ -337,8 +358,8 @@ const openModal = (type: string) => {
 
 const resetForm = () => {
   form.tagsRaw = '';
-  form.project = { title: '', description: '', imageUrl: '', projectUrl: '' };
-  form.experience = { role: '', company: '', period: '', description: '', isCurrent: false };
+  form.project = { title: '', description: '', imageUrl: '', logoUrl: '', projectUrl: '', gallery: [] };
+  form.experience = { role: '', company: '', companyLogo: '', period: '', description: '', isCurrent: false };
   form.contact = { platform: '', url: '', icon: '' };
   form.config3d = { scrollPercent: 0, posX: '0', posY: '0', posZ: '0', rotX: '0', rotY: '0', rotZ: '0', scale: '1' };
 };
@@ -349,11 +370,25 @@ const editItem = (type: string, item: any) => {
   modal.show = true;
   
   if (type === 'project') {
-    form.project = { ...item };
-    form.tagsRaw = item.tags.join(', ');
+    form.project = { 
+      title: item.title, 
+      description: item.description, 
+      imageUrl: item.imageUrl, 
+      logoUrl: item.logoUrl || '', 
+      projectUrl: item.projectUrl || '', 
+      gallery: item.gallery || [] 
+    };
+    form.tagsRaw = (item.tags || []).join(', ');
   } else if (type === 'experience') {
-    form.experience = { ...item };
-    form.tagsRaw = item.tags.join(', ');
+    form.experience = { 
+      role: item.role, 
+      company: item.company, 
+      companyLogo: item.companyLogo || '', 
+      period: item.period, 
+      description: item.description, 
+      isCurrent: item.isCurrent 
+    };
+    form.tagsRaw = (item.tags || []).join(', ');
   } else if (type === 'contact') {
     form.contact = { ...item };
   } else if (type === 'config3d') {
@@ -381,6 +416,9 @@ const handleSubmit = async () => {
   
   if (modal.type === 'project') {
     endpoint = 'projects';
+    if (form.project.gallery.length > 0) {
+      form.project.imageUrl = form.project.gallery[0];
+    }
     payload = { ...form.project, tags: form.tagsRaw.split(',').map(t => t.trim()).filter(t => t) };
   } else if (modal.type === 'experience') {
     endpoint = 'experience';
@@ -413,5 +451,11 @@ const handleSubmit = async () => {
   } catch (err) {
     console.error(err);
   }
+};
+
+const serveImage = (path: string, width = 400, height = 300) => {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  return path;
 };
 </script>
