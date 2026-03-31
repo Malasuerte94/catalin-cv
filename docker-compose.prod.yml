@@ -167,6 +167,8 @@ services:
 volumes:
   postgres_data_prod:
     driver: local
+  uploads_data:
+    driver: local
   invoices_data:
     driver: local
   backups_data:
