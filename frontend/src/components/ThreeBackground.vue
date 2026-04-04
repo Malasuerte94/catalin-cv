@@ -205,7 +205,16 @@ const init = () => {
         let t = 0;
         if (startIdx !== endIdx) {
           const range = endK.absolutePos - startK.absolutePos;
-          t = (currentScroll - startK.absolutePos) / (range || 1);
+          const linearT = (currentScroll - startK.absolutePos) / (range || 1);
+          
+          // Delayed transition: stay at 0 until threshold, then remap threshold-1.0 to 0-1
+          const threshold = 0.65;
+          if (linearT < threshold) {
+            t = 0;
+          } else {
+            t = (linearT - threshold) / (1 - threshold);
+          }
+          
           t = Math.max(0, Math.min(1, t));
         }
 
