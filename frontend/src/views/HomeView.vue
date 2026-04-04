@@ -298,16 +298,18 @@
 
     <!-- Lightbox Modal -->
     <Transition name="modal-project">
-      <div v-if="selectedProject" class="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-12">
-          <div class="absolute inset-0 bg-background/90 backdrop-blur-2xl" @click="closeLightbox"></div>
+      <div v-if="selectedProject" class="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-12 overflow-hidden">
+          <div class="backdrop-transition" @click="closeLightbox"></div>
           
           <div 
-            class="modal-content relative w-full max-w-6xl h-full md:h-auto md:max-h-full overflow-y-auto scrollbar-hide flex flex-col bg-background/50 md:rounded-[2.5rem] md:border md:border-white/10 shadow-[0_30px_100px_rgba(0,0,0,0.8)]"
+            class="modal-content relative w-full max-w-[1400px] h-full md:h-auto md:max-h-[90vh] overflow-y-auto flex flex-col md:rounded-[2.5rem] md:border md:border-white/10 shadow-[0_30px_100px_rgba(0,0,0,0.8)]"
+            :style="{ backgroundColor: 'rgba(0, 0, 0, 0.98)' }"
             @scroll="handleModalScroll"
+            data-lenis-prevent
           >
               <!-- Sticky Header -->
               <div 
-                class="sticky top-0 z-[110] transition-all duration-500 ease-in-out px-8 md:px-16"
+                class="modal-header sticky top-0 z-[110] px-8 md:px-16"
                 :class="{ 'sticky-nav-active py-4': modalScrollY > 50, 'py-12 md:py-20': modalScrollY <= 50 }"
               >
                   <div class="flex items-center justify-between gap-8">
@@ -325,7 +327,7 @@
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="mb-1"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
                             </a>
                         </div>
-                        <div class="flex flex-wrap gap-2 transition-opacity duration-500" :class="{ 'opacity-0 h-0 overflow-hidden': modalScrollY > 100 }">
+                        <div class="flex flex-wrap gap-2 transition-all duration-500" :class="{ 'scale-90 origin-left mt-1': modalScrollY > 50 }">
                             <span v-for="tag in selectedProject.tags" :key="tag" class="bg-primary/10 text-primary border border-primary/20 px-3 py-0.5 rounded-full text-[10px] font-bold font-label uppercase tracking-widest">{{ tag }}</span>
                         </div>
                     </div>
