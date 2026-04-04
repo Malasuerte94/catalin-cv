@@ -19,14 +19,13 @@
         <section class="mb-12 md:mb-32 min-h-[70vh] flex flex-col justify-center px-6 md:px-[10vw]" id="home">
             <div class="flex flex-col items-start gap-6 max-w-3xl w-full text-left reveal-on-scroll" :ref="revealRef">
                 <h1
+                    v-reveal-text
                     class="font-headline text-5xl md:text-7xl font-black leading-[1.1] tracking-tighter text-on-background">
-                    TRANSFORMING RAW <span class="text-primary animate-pulse-glow rounded-lg px-2">IDEA</span> INTO <span
-                        class="text-secondary">REAL EXPERIENCES</span>.
+                    TRANSFORMING RAW IDEA INTO REAL EXPERIENCES.
                 </h1>
-                <p class="text-on-surface-variant text-lg md:text-xl font-light leading-relaxed stagger-item" style="transition-delay: 200ms">
-                    I bridge the gap between complex technical systems and elegant, high-fidelity
-                    interfaces. My work is focused on building digital products that feel intuitive and powerful.
-                </p>
+                <div v-reveal-text class="text-on-surface-variant text-lg md:text-xl font-light leading-relaxed stagger-item" style="transition-delay: 200ms">
+                    I bridge the gap between complex technical systems and elegant, high-fidelity interfaces. My work is focused on building digital products that feel intuitive and powerful.
+                </div>
                 <div class="mt-4 flex gap-4 stagger-item" style="transition-delay: 400ms">
                     <div class="h-12 w-1 bg-primary rounded-full shadow-[0_0_15px_rgba(135,239,255,0.6)] animate-bounce"></div>
                     <p class="font-label text-xs uppercase tracking-widest text-on-surface-variant pt-2">Scroll to
@@ -40,7 +39,7 @@
             <!-- Experience Section (Timeline) -->
             <section class="mb-12 md:mb-48" id="experience">
                 <div class="flex items-center gap-4 mb-6 md:mb-16 px-6 reveal-on-scroll" :ref="revealRef">
-                    <h2 class="font-headline text-3xl font-black uppercase tracking-tighter glitch-text" data-text="Experience_Log">Experience_Log</h2>
+                    <h2 v-reveal-text class="font-headline text-3xl font-black uppercase tracking-tighter glitch-text" data-text="Experience_Log">Experience_Log</h2>
                     <div class="h-[1px] flex-grow bg-outline-variant/30"></div>
                 </div>
                 <div class="relative space-y-6 md:space-y-16">
@@ -98,7 +97,7 @@
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6 md:mb-16 reveal-on-scroll" :ref="revealRef">
                     <div class="flex items-center gap-4 flex-grow">
                         <div class="h-[1px] w-24 bg-primary shadow-[0_0_10px_rgba(0,232,255,0.5)]"></div>
-                        <h2 class="font-headline text-3xl font-black uppercase tracking-tighter glitch-text" data-text="Project_Files">Project_Files</h2>
+                        <h2 v-reveal-text class="font-headline text-3xl font-black uppercase tracking-tighter glitch-text" data-text="Project_Files">Project_Files</h2>
                         <div class="h-[1px] flex-grow bg-outline-variant/30"></div>
                     </div>
                     
@@ -206,8 +205,8 @@
                     <div class="flex flex-col lg:grid lg:grid-cols-2 gap-12 md:gap-16">
                         <!-- Header & Intro (Mobile: Order 1, Desktop: Order 1) -->
                         <div>
-                            <h2 class="font-headline text-4xl font-black mb-3 md:mb-8 leading-tight">INITIALIZE CONNECTION</h2>
-                            <p class="text-on-surface-variant mb-6 md:mb-12 text-lg">Ready to upgrade your system architecture?
+                            <h2 v-reveal-text class="font-headline text-4xl font-black mb-3 md:mb-8 leading-tight">INITIALIZE CONNECTION</h2>
+                            <p v-reveal-text class="text-on-surface-variant mb-6 md:mb-12 text-lg">Ready to upgrade your system architecture?
                                 Leave a packet below and my node will reach out to yours within 24 standard cycles.</p>
                             
                             <!-- Desktop Contact Links -->
