@@ -34,9 +34,8 @@
             </div>
         </section>
 
-        <!-- Content Container (1200px) -->
-        <div class="max-w-[1200px] mx-auto px-0">
-            <!-- Experience Section (Timeline) -->
+        <!-- Experience Section (Timeline) - Keep in Container -->
+        <div class="max-w-[1200px] mx-auto px-6 md:px-0">
             <section class="mb-12 md:mb-48" id="experience">
                 <div class="flex items-center gap-4 mb-6 md:mb-16 px-6 reveal-on-scroll" :ref="revealRef">
                     <h2 v-reveal-text class="font-headline text-3xl font-black uppercase tracking-tighter glitch-text" data-text="Experience_Log">Experience_Log</h2>
@@ -49,7 +48,7 @@
                     </div>
                     
                     <div v-for="(item, index) in dataStore.experience" :key="item.id" 
-                        class="relative md:pl-28 group mb-6 md:mb-24 px-6 md:px-0 reveal-on-scroll" 
+                        class="relative md:pl-28 group mb-6 md:mb-24 px-0 reveal-on-scroll" 
                         :ref="revealRef"
                         :data-reveal-delay="index * 100"
                     >
@@ -91,119 +90,121 @@
                     </div>
                 </div>
             </section>
+        </div>
 
-            <!-- Portfolio Section -->
-            <section class="mb-12 md:mb-48 px-6 md:px-0" id="portfolio">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6 md:mb-16 reveal-on-scroll" :ref="revealRef">
-                    <div class="flex items-center gap-4 flex-grow">
-                        <div class="h-[1px] w-24 bg-primary shadow-[0_0_10px_rgba(0,232,255,0.5)]"></div>
-                        <h2 v-reveal-text class="font-headline text-3xl font-black uppercase tracking-tighter glitch-text" data-text="Project_Files">Project_Files</h2>
-                        <div class="h-[1px] flex-grow bg-outline-variant/30"></div>
-                    </div>
-                    
-                    <!-- Tech Filter Icons -->
-                    <div class="flex gap-4 items-center bg-background/40 backdrop-blur-xl p-2 rounded-2xl border border-white/5 shadow-2xl">
-                        <button 
-                            @click="projectFilter = 'all'"
-                            class="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 border border-white/5"
-                            :class="projectFilter === 'all' ? 'bg-primary text-on-primary shadow-[0_0_20px_rgba(0,232,255,0.4)] border-primary' : 'text-slate-500 hover:text-white hover:bg-white/5'"
-                            title="All Projects"
-                        >
-                            <span class="material-symbols-outlined">grid_view</span>
-                        </button>
-                        <div class="w-[1px] h-6 bg-white/10"></div>
-                        <button 
-                            @click="projectFilter = 'custom'"
-                            class="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 border border-white/5"
-                            :class="projectFilter === 'custom' ? 'bg-primary text-on-primary shadow-[0_0_20px_rgba(0,232,255,0.4)] border-primary' : 'text-slate-500 hover:text-white hover:bg-white/5'"
-                            title="Custom Code"
-                        >
-                            <span class="material-symbols-outlined">code</span>
-                        </button>
-                        <button 
-                            @click="projectFilter = 'wordpress'"
-                            class="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 border border-white/5"
-                            :class="projectFilter === 'wordpress' ? 'bg-primary text-on-primary shadow-[0_0_20px_rgba(0,232,255,0.4)] border-primary' : 'text-slate-500 hover:text-white hover:bg-white/5'"
-                            title="WordPress"
-                        >
-                            <svg viewBox="0 0 24 24" class="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg"><path d="M12.158 12.786l-2.698 7.84c.806.236 1.657.365 2.54.365 1.047 0 2.051-.181 2.986-.51-.11-.186-.21-.363-.293-.53l-2.535-7.165zm3.91-3.796c.621 0 1.09.53 1.09 1.134 0 .528-.27 1.05-.594 1.55l-2.991 8.072c2.095-1.34 3.483-3.655 3.483-6.289 0-1.144-.258-2.228-.718-3.197l-.27.73c0 .01.01.01.01.01zm-11.734.417c-.441.979-.688 2.063-.688 3.203 0 2.825 1.565 5.282 3.882 6.574l-3.033-8.293c-.053.17-.11.345-.161.516zm7.666 1.57h.01l3.304 9.126c.404-.265.787-.565 1.143-.897l-3.504-9.357c-.47-.234-.906-.399-1.309-.399-.403 0-.766.11-.954.327zm-3.65-1.01c.717 0 1.306 1.234 1.306 2.054 0 .341-.055.67-.117.962l-2.483 7.21c-.01.03-.024.061-.035.091-1.631-1.22-2.684-3.181-2.684-5.388 0-1.12.274-2.176.758-3.098l3.255-1.83zm3.65 0c.844 0 1.366 1.171 1.366 2.122 0 .61-.265 1.25-.49 1.777l-1.636-4.631c.214-.241.488-.344.76-.344zM12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm.114 21.035c-4.991 0-9.035-4.045-9.035-9.035S7.123 2.965 12.114 2.965 21.15 7.01 21.15 12s-4.045 9.035-9.036 9.035z"/></svg>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                    <div v-for="(project, index) in displayedProjects" :key="project.id"
-                        class="group relative overflow-hidden rounded-2xl glass-panel shadow-[0_10px_40px_rgba(0,232,255,0.05)] reveal-on-scroll"
-                        :ref="revealRef"
-                        :data-reveal-delay="(index % 2) * 100"
-                    >
-                        
-                        <!-- Project Cover / First Gallery Image -->
-                        <div v-if="project.imageUrl" @click="openLightbox(project)" class="aspect-video overflow-hidden relative cursor-zoom-in">
-                            <img :src="serveImage(project.imageUrl, 800, 450)" :alt="project.title"
-                                loading="lazy"
-                                class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
-                            
-                            <!-- Project Logo Overlay -->
-                            <div v-if="project.logoUrl" class="absolute bottom-4 left-4 w-16 h-16 rounded-xl bg-background/40 backdrop-blur-xl border border-white/10 p-2 shadow-2xl overflow-hidden group-hover:scale-110 transition-transform">
-                                <img :src="serveImage(project.logoUrl, 100, 100)" class="w-full h-full object-contain" loading="lazy" />
-                            </div>
-
-                            <!-- Tech Icon Overlay -->
-                            <div class="absolute top-4 right-4 w-10 h-10 rounded-xl bg-background/40 backdrop-blur-xl border border-white/10 flex items-center justify-center text-primary shadow-2xl group-hover:scale-110 transition-transform">
-                                <span v-if="project.techType === 'wordpress'" class="w-6 h-6 flex items-center justify-center">
-                                    <svg viewBox="0 0 24 24" class="w-full h-full fill-current" xmlns="http://www.w3.org/2000/svg"><path d="M12.158 12.786l-2.698 7.84c.806.236 1.657.365 2.54.365 1.047 0 2.051-.181 2.986-.51-.11-.186-.21-.363-.293-.53l-2.535-7.165zm3.91-3.796c.621 0 1.09.53 1.09 1.134 0 .528-.27 1.05-.594 1.55l-2.991 8.072c2.095-1.34 3.483-3.655 3.483-6.289 0-1.144-.258-2.228-.718-3.197l-.27.73c0 .01.01.01.01.01zm-11.734.417c-.441.979-.688 2.063-.688 3.203 0 2.825 1.565 5.282 3.882 6.574l-3.033-8.293c-.053.17-.11.345-.161.516zm7.666 1.57h.01l3.304 9.126c.404-.265.787-.565 1.143-.897l-3.504-9.357c-.47-.234-.906-.399-1.309-.399-.403 0-.766.11-.954.327zm-3.65-1.01c.717 0 1.306 1.234 1.306 2.054 0 .341-.055.67-.117.962l-2.483 7.21c-.01.03-.024.061-.035.091-1.631-1.22-2.684-3.181-2.684-5.388 0-1.12.274-2.176.758-3.098l3.255-1.83zm3.65 0c.844 0 1.366 1.171 1.366 2.122 0 .61-.265 1.25-.49 1.777l-1.636-4.631c.214-.241.488-.344.76-.344zM12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm.114 21.035c-4.991 0-9.035-4.045-9.035-9.035S7.123 2.965 12.114 2.965 21.15 7.01 21.15 12s-4.045 9.035-9.036 9.035z"/></svg>
-                                </span>
-                                <span v-else class="material-symbols-outlined text-2xl">code</span>
-                            </div>
-
-                            <!-- Overlay on hover -->
-                            <div class="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
-                        </div>
-
-                        <div class="p-6 md:p-8">
-                            <div class="flex items-center justify-between gap-4 mb-4">
-                                <h4
-                                    class="text-xl font-headline font-bold text-on-background group-hover:text-primary transition-colors truncate">
-                                    {{ project.title }}</h4>
-                                <a v-if="project.projectUrl" :href="project.projectUrl" target="_blank"
-                                    class="flex-shrink-0 flex items-center gap-2 text-primary font-headline font-black font-bold text-[10px] uppercase tracking-widest hover:brightness-110 transition-all">
-                                    <span>SEE WEBSITE</span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="mb-0.5"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
-                                </a>
-                            </div>
-                            
-                            <div class="text-on-surface-variant text-sm font-light mb-6 rich-text-content line-clamp-3" v-html="project.description"></div>
-                            
-                            <!-- Small Gallery Strip -->
-                            <div v-if="project.gallery && project.gallery.length > 1" class="flex gap-3 overflow-x-auto pb-4 mb-4 scrollbar-hide">
-                                <div v-for="(img, idx) in project.gallery" :key="idx" 
-                                    @click="openLightbox(project)"
-                                    class="min-w-[80px] h-12 rounded-lg overflow-hidden border border-white/5 opacity-60 hover:opacity-100 transition-all cursor-pointer hover:scale-105">
-                                    <img :src="serveImage(img, 160, 100)" class="w-full h-full object-cover" loading="lazy" />
-                                </div>
-                            </div>
-
-                            <div class="flex flex-wrap gap-3">
-                                <span v-for="tag in project.tags" :key="tag"
-                                    class="text-[10px] font-label font-bold text-secondary-fixed border border-secondary/20 px-2 py-1 rounded hover:bg-secondary/10 transition-colors uppercase">{{ tag }}</span>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Portfolio Section - Full Width -->
+        <section class="mb-12 md:mb-48 px-6 md:px-12" id="portfolio">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6 md:mb-16 reveal-on-scroll" :ref="revealRef">
+                <div class="flex items-center gap-4 flex-grow">
+                    <div class="h-[1px] w-24 bg-primary shadow-[0_0_10px_rgba(0,232,255,0.5)]"></div>
+                    <h2 v-reveal-text class="font-headline text-3xl font-black uppercase tracking-tighter glitch-text" data-text="Project_Files">Project_Files</h2>
+                    <div class="h-[1px] flex-grow bg-outline-variant/30"></div>
                 </div>
                 
-                <!-- Load More Trigger -->
-                <div ref="loadMoreTrigger" class="h-20 w-full opacity-0"></div>
-            </section>
+                <!-- Tech Filter Icons -->
+                <div class="flex gap-4 items-center bg-background/40 backdrop-blur-xl p-2 rounded-2xl border border-white/5 shadow-2xl">
+                    <button 
+                        @click="projectFilter = 'all'"
+                        class="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 border border-white/5"
+                        :class="projectFilter === 'all' ? 'bg-primary text-on-primary shadow-[0_0_20px_rgba(0,232,255,0.4)] border-primary' : 'text-slate-500 hover:text-white hover:bg-white/5'"
+                        title="All Projects"
+                    >
+                        <span class="material-symbols-outlined">grid_view</span>
+                    </button>
+                    <div class="w-[1px] h-6 bg-white/10"></div>
+                    <button 
+                        @click="projectFilter = 'custom'"
+                        class="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 border border-white/5"
+                        :class="projectFilter === 'custom' ? 'bg-primary text-on-primary shadow-[0_0_20px_rgba(0,232,255,0.4)] border-primary' : 'text-slate-500 hover:text-white hover:bg-white/5'"
+                        title="Custom Code"
+                    >
+                        <span class="material-symbols-outlined">code</span>
+                    </button>
+                    <button 
+                        @click="projectFilter = 'wordpress'"
+                        class="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 border border-white/5"
+                        :class="projectFilter === 'wordpress' ? 'bg-primary text-on-primary shadow-[0_0_20px_rgba(0,232,255,0.4)] border-primary' : 'text-slate-500 hover:text-white hover:bg-white/5'"
+                        title="WordPress"
+                    >
+                        <svg viewBox="0 0 24 24" class="w-6 h-6 fill-current" xmlns="http://www.w3.org/2000/svg"><path d="M12.158 12.786l-2.698 7.84c.806.236 1.657.365 2.54.365 1.047 0 2.051-.181 2.986-.51-.11-.186-.21-.363-.293-.53l-2.535-7.165zm3.91-3.796c.621 0 1.09.53 1.09 1.134 0 .528-.27 1.05-.594 1.55l-2.991 8.072c2.095-1.34 3.483-3.655 3.483-6.289 0-1.144-.258-2.228-.718-3.197l-.27.73c0 .01.01.01.01.01zm-11.734.417c-.441.979-.688 2.063-.688 3.203 0 2.825 1.565 5.282 3.882 6.574l-3.033-8.293c-.053.17-.11.345-.161.516zm7.666 1.57h.01l3.304 9.126c.404-.265.787-.565 1.143-.897l-3.504-9.357c-.47-.234-.906-.399-1.309-.399-.403 0-.766.11-.954.327zm-3.65-1.01c.717 0 1.306 1.234 1.306 2.054 0 .341-.055.67-.117.962l-2.483 7.21c-.01.03-.024.061-.035.091-1.631-1.22-2.684-3.181-2.684-5.388 0-1.12.274-2.176.758-3.098l3.255-1.83zm3.65 0c.844 0 1.366 1.171 1.366 2.122 0 .61-.265 1.25-.49 1.777l-1.636-4.631c.214-.241.488-.344.76-.344zM12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm.114 21.035c-4.991 0-9.035-4.045-9.035-9.035S7.123 2.965 12.114 2.965 21.15 7.01 21.15 12s-4.045 9.035-9.036 9.035z"/></svg>
+                    </button>
+                </div>
+            </div>
 
-            <!-- Contact Section -->
-            <section class="mb-5 md:mb-48 px-6 md:px-0" id="contact">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                <div v-for="(project, index) in displayedProjects" :key="project.id"
+                    class="group relative overflow-hidden rounded-2xl glass-panel shadow-[0_10px_40px_rgba(0,232,255,0.05)] reveal-on-scroll"
+                    :ref="revealRef"
+                    :data-reveal-delay="(index % 3) * 100"
+                >
+                    
+                    <!-- Project Cover / First Gallery Image -->
+                    <div v-if="project.imageUrl" @click="openLightbox(project)" class="aspect-video overflow-hidden relative cursor-zoom-in">
+                        <img :src="serveImage(project.imageUrl, 800, 450)" :alt="project.title"
+                            loading="lazy"
+                            class="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
+                        
+                        <!-- Project Logo Overlay -->
+                        <div v-if="project.logoUrl" class="absolute bottom-4 left-4 w-16 h-16 rounded-xl bg-background/40 backdrop-blur-xl border border-white/10 p-2 shadow-2xl overflow-hidden group-hover:scale-110 transition-transform">
+                            <img :src="serveImage(project.logoUrl, 100, 100)" class="w-full h-full object-contain" loading="lazy" />
+                        </div>
+
+                        <!-- Tech Icon Overlay -->
+                        <div class="absolute top-4 right-4 w-10 h-10 rounded-xl bg-background/40 backdrop-blur-xl border border-white/10 flex items-center justify-center text-primary shadow-2xl group-hover:scale-110 transition-transform">
+                            <span v-if="project.techType === 'wordpress'" class="w-6 h-6 flex items-center justify-center">
+                                <svg viewBox="0 0 24 24" class="w-full h-full fill-current" xmlns="http://www.w3.org/2000/svg"><path d="M12.158 12.786l-2.698 7.84c.806.236 1.657.365 2.54.365 1.047 0 2.051-.181 2.986-.51-.11-.186-.21-.363-.293-.53l-2.535-7.165zm3.91-3.796c.621 0 1.09.53 1.09 1.134 0 .528-.27 1.05-.594 1.55l-2.991 8.072c2.095-1.34 3.483-3.655 3.483-6.289 0-1.144-.258-2.228-.718-3.197l-.27.73c0 .01.01.01.01.01zm-11.734.417c-.441.979-.688 2.063-.688 3.203 0 2.825 1.565 5.282 3.882 6.574l-3.033-8.293c-.053.17-.11.345-.161.516zm7.666 1.57h.01l3.304 9.126c.404-.265.787-.565 1.143-.897l-3.504-9.357c-.47-.234-.906-.399-1.309-.399-.403 0-.766.11-.954.327zm-3.65-1.01c.717 0 1.306 1.234 1.306 2.054 0 .341-.055.67-.117.962l-2.483 7.21c-.01.03-.024.061-.035.091-1.631-1.22-2.684-3.181-2.684-5.388 0-1.12.274-2.176.758-3.098l3.255-1.83zm3.65 0c.844 0 1.366 1.171 1.366 2.122 0 .61-.265 1.25-.49 1.777l-1.636-4.631c.214-.241.488-.344.76-.344zM12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm.114 21.035c-4.991 0-9.035-4.045-9.035-9.035S7.123 2.965 12.114 2.965 21.15 7.01 21.15 12s-4.045 9.035-9.036 9.035z"/></svg>
+                            </span>
+                            <span v-else class="material-symbols-outlined text-2xl">code</span>
+                        </div>
+
+                        <!-- Overlay on hover -->
+                        <div class="absolute inset-0 bg-primary/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
+                    </div>
+
+                    <div class="p-6 md:p-8">
+                        <div class="flex items-center justify-between gap-4 mb-4">
+                            <h4
+                                class="text-xl font-headline font-bold text-on-background group-hover:text-primary transition-colors truncate">
+                                {{ project.title }}</h4>
+                            <a v-if="project.projectUrl" :href="project.projectUrl" target="_blank"
+                                class="flex-shrink-0 flex items-center gap-2 text-primary font-headline font-black font-bold text-[10px] uppercase tracking-widest hover:brightness-110 transition-all">
+                                <span>SEE WEBSITE</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="mb-0.5"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                            </a>
+                        </div>
+                        
+                        <div class="text-on-surface-variant text-sm font-light mb-6 rich-text-content line-clamp-3" v-html="project.description"></div>
+                        
+                        <!-- Small Gallery Strip -->
+                        <div v-if="project.gallery && project.gallery.length > 1" class="flex gap-3 overflow-x-auto pb-4 mb-4 scrollbar-hide">
+                            <div v-for="(img, idx) in project.gallery" :key="idx" 
+                                @click="openLightbox(project)"
+                                class="min-w-[80px] h-12 rounded-lg overflow-hidden border border-white/5 opacity-60 hover:opacity-100 transition-all cursor-pointer hover:scale-105">
+                                <img :src="serveImage(img, 160, 100)" class="w-full h-full object-cover" loading="lazy" />
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap gap-3">
+                            <span v-for="tag in project.tags" :key="tag"
+                                class="text-[10px] font-label font-bold text-secondary-fixed border border-secondary/20 px-2 py-1 rounded hover:bg-secondary/10 transition-colors uppercase">{{ tag }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Load More Trigger -->
+            <div ref="loadMoreTrigger" class="h-20 w-full opacity-0"></div>
+        </section>
+
+        <!-- Contact Section - Centered in Container -->
+        <div class="max-w-[1200px] mx-auto px-6 md:px-0">
+            <section class="mb-5 md:mb-48" id="contact">
                 <div
                     class="glass-panel p-6 md:p-16 rounded-[2rem] border-primary/10 shadow-[0_0_60px_rgba(0,232,255,0.05)] reveal-on-scroll"
                     :ref="revealRef"
                 >
                     <div class="flex flex-col lg:grid lg:grid-cols-2 gap-12 md:gap-16">
-                        <!-- Header & Intro (Mobile: Order 1, Desktop: Order 1) -->
+                        <!-- Header & Intro -->
                         <div>
                             <h2 v-reveal-text class="font-headline text-4xl font-black mb-3 md:mb-8 leading-tight">INITIALIZE CONNECTION</h2>
                             <p v-reveal-text class="text-on-surface-variant mb-6 md:mb-12 text-lg">Ready to upgrade your system architecture?
