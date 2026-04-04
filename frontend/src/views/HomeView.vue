@@ -340,8 +340,8 @@
                         </div>
                     </div>
                     
-                    <button @click="closeLightbox" class="text-white/40 hover:text-white transition-all hover:rotate-90">
-                        <span class="material-symbols-outlined text-3xl md:text-4xl">close</span>
+                    <button @click="closeLightbox" class="w-12 h-12 flex items-center justify-center text-white/40 hover:text-white transition-all duration-300 hover:rotate-90 origin-center group/close">
+                        <span class="material-symbols-outlined text-3xl md:text-4xl block">close</span>
                     </button>
                   </div>
               </div>
