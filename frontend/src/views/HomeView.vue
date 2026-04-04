@@ -383,14 +383,16 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref, computed, watch } from 'vue';
 import { useDataStore } from '../stores/data';
 import { useReveal } from '../composables/useReveal';
 import { useScrollLock } from '@vueuse/core';
+import { useLenis } from '../composables/useLenis';
 
 const dataStore = useDataStore();
 const selectedProject = ref<any>(null);
 const { revealRef } = useReveal();
+const { lenis } = useLenis();
 const currentSection = ref('home');
 const modalScrollY = ref(0);
 const projectFilter = ref<'all' | 'custom' | 'wordpress'>('all');
@@ -398,6 +400,14 @@ const displayLimit = ref(8);
 const loadMoreTrigger = ref<HTMLElement | null>(null);
 
 const isLocked = useScrollLock(document.documentElement);
+
+watch(isLocked, (val) => {
+  if (val) {
+    lenis.value?.stop();
+  } else {
+    lenis.value?.start();
+  }
+});
 
 const filteredProjects = computed(() => {
   let filtered = dataStore.projects;
@@ -494,9 +504,13 @@ onMounted(() => {
 });
 
 const scrollTo = (selector: string) => {
-  const element = document.querySelector(selector);
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth' });
+  if (lenis.value) {
+    lenis.value.scrollTo(selector, { duration: 1.5 });
+  } else {
+    const element = document.querySelector(selector);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
   }
 };
 

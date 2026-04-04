@@ -124,7 +124,7 @@ services:
 
 networks:
   catalin-ene-network:
-    external: true
+    driver: bridge
 
 volumes:
   postgres_dev_data:

@@ -42,10 +42,20 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
+import { useLenis } from '../composables/useLenis';
 
+const { lenis } = useLenis();
 const loading = ref(true);
 const progress = ref(0);
+
+watch(loading, (val) => {
+  if (val) {
+    lenis.value?.stop();
+  } else {
+    lenis.value?.start();
+  }
+}, { immediate: true });
 const currentMessage = ref('Booting core modules...');
 
 const messages = [

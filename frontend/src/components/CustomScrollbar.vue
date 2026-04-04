@@ -15,7 +15,9 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue';
+import { useLenis } from '../composables/useLenis';
 
+const { lenis } = useLenis();
 const thumbHeight = ref(0);
 const thumbTop = ref(0);
 const isDragging = ref(false);
@@ -59,7 +61,13 @@ const onDrag = (e: MouseEvent) => {
   const maxScroll = scrollHeight - clientHeight;
   
   const ratio = maxScroll / (clientHeight - thumbHeight.value);
-  window.scrollTo(0, startScrollTop.value + deltaY * ratio);
+  const targetScroll = startScrollTop.value + deltaY * ratio;
+
+  if (lenis.value) {
+    lenis.value.scrollTo(targetScroll, { immediate: true });
+  } else {
+    window.scrollTo(0, targetScroll);
+  }
 };
 
 const stopDrag = () => {
