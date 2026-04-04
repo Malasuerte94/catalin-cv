@@ -298,12 +298,20 @@
 
     <!-- Lightbox Modal -->
     <Transition name="modal-project">
-      <div v-if="selectedProject" class="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-12 overflow-hidden">
+      <div v-if="selectedProject" 
+        class="fixed inset-0 z-[100] flex items-center justify-center p-0 md:p-12 overflow-hidden"
+        @wheel="handleModalWheel"
+      >
           <div class="backdrop-transition" @click="closeLightbox"></div>
           
           <div 
+            ref="modalContent"
             class="modal-content relative w-full max-w-[1400px] h-full md:h-auto md:max-h-[90vh] overflow-y-auto flex flex-col md:rounded-[2.5rem] md:border md:border-white/10 shadow-[0_30px_100px_rgba(0,0,0,0.8)]"
-            :style="{ backgroundColor: 'rgba(0, 0, 0, 0.98)' }"
+            :class="{ 'transition-transform duration-500 ease-out': !isPulling }"
+            :style="{ 
+              backgroundColor: 'rgba(0, 0, 0, 0.98)',
+              transform: `translateY(-${overscrollY}px)`
+            }"
             @scroll="handleModalScroll"
             data-lenis-prevent
           >
@@ -399,6 +407,7 @@ const modalScrollY = ref(0);
 const projectFilter = ref<'all' | 'custom' | 'wordpress'>('all');
 const displayLimit = ref(8);
 const loadMoreTrigger = ref<HTMLElement | null>(null);
+const modalContent = ref<HTMLElement | null>(null);
 
 const isLocked = useScrollLock(document.documentElement);
 
@@ -462,6 +471,37 @@ const navLinks = [
   { text: 'Projects', href: '#portfolio' },
   { text: 'Contact', href: '#contact' }
 ];
+
+const overscrollY = ref(0);
+const isPulling = ref(false);
+
+const handleModalWheel = (e: WheelEvent) => {
+  if (!modalContent.value) return;
+  
+  const target = modalContent.value;
+  const isAtBottom = target.scrollHeight - target.scrollTop <= target.clientHeight + 2;
+  
+  if (isAtBottom && e.deltaY > 0) {
+    isPulling.value = true;
+    // Accumulate overscroll with high resistance
+    overscrollY.value += e.deltaY * 0.4;
+    
+    // If pulled more than 80vh, trigger close
+    const threshold = window.innerHeight * 0.8;
+    if (overscrollY.value > threshold) {
+      closeLightbox();
+      return;
+    }
+  } else if (overscrollY.value > 0 && e.deltaY < 0) {
+    // Scrolling up reduces the "pull"
+    overscrollY.value = Math.max(0, overscrollY.value + e.deltaY * 0.8);
+    if (overscrollY.value === 0) isPulling.value = false;
+  } else if (!isAtBottom && overscrollY.value > 0) {
+    // If they scroll back up into the content, reset pull
+    overscrollY.value = 0;
+    isPulling.value = false;
+  }
+};
 
 const handleModalScroll = (e: Event) => {
   const target = e.target as HTMLElement;
@@ -530,6 +570,11 @@ const openLightbox = (project: any) => {
 const closeLightbox = () => {
   selectedProject.value = null;
   isLocked.value = false;
+  // Reset pull state after a delay to match transition
+  setTimeout(() => {
+    overscrollY.value = 0;
+    isPulling.value = false;
+  }, 800);
 };
 
 const copyToClipboard = (text: string) => {

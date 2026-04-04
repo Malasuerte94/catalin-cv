@@ -323,7 +323,7 @@
 
   .modal-project-enter-from .modal-content,
   .modal-project-leave-to .modal-content {
-    transform: translateY(-40px) scale(0.98);
+    transform: translateY(-100%) scale(0.98);
     opacity: 0;
   }
 
