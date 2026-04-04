@@ -295,13 +295,25 @@
     will-change: opacity;
   }
 
-  /* Vue Transition Hooks for the Backdrop */
-  .modal-project-enter-to .backdrop-transition {
-    opacity: 1;
+  /* Modal Project Transition - Wrapper */
+  .modal-project-enter-active,
+  .modal-project-leave-active {
+    transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
+  .modal-project-enter-from,
+  .modal-project-leave-to {
+    opacity: 0;
+  }
+
+  /* Backdrop Transition */
+  .modal-project-enter-active .backdrop-transition,
   .modal-project-leave-active .backdrop-transition {
     transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .modal-project-enter-to .backdrop-transition {
+    opacity: 1;
   }
 
   .modal-project-leave-to .backdrop-transition {
